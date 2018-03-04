@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Kussy.Analysis.Project.Core
 {
@@ -29,6 +30,13 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
         public static Risk Of(decimal failRate, decimal reworkRate, decimal costOverRate)
         {
+            Contract.Requires(failRate >= 0m);
+            Contract.Requires(failRate <= 1m);
+            Contract.Requires(reworkRate >= 0m);
+            Contract.Requires(reworkRate <= 1m);
+            Contract.Requires(costOverRate >= 0m);
+            Contract.Requires(costOverRate <= 1m);
+
             return new Risk()
             {
                 FailRate = failRate,
