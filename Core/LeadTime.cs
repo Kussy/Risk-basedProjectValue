@@ -9,7 +9,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>値</summary>
         public decimal Value { get; private set; } = 0m;
         /// <summary>単位</summary>
-        public TimeType Unit { get; private set; } = TimeType.Day;
+        public TimeType TimeUnit { get; private set; } = TimeType.Day;
 
         /// <summary>プライベートコンストラクタ</summary>
         private LeadTime() { }
@@ -25,13 +25,13 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="value">値</param>
         /// <param name="unit">単位</param>
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
-        public static LeadTime Estemated(decimal value, TimeType unit)
+        public static LeadTime Of(decimal value, TimeType unit)
         {
             Contract.Requires(value >= 0);
             return new LeadTime()
             {
                 Value = value,
-                Unit = unit,
+                TimeUnit = unit,
             };
         }
 
@@ -40,7 +40,7 @@ namespace Kussy.Analysis.Project.Core
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Value;
-            yield return Unit;
+            yield return TimeUnit;
         }
     }
 }
