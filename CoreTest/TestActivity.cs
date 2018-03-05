@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Kussy.Analysis.Project.Core
@@ -71,13 +72,13 @@ namespace Kussy.Analysis.Project.Core
         {
             var expectedValue = 100m;
             var expectedTimeType = TimeType.Day;
-            var expectedWorkerType = WorkerType.Human;
+            var expectedWorkerType = ResourceType.Human;
 
             var activity = new Activity();
             activity.Estimate(WorkLoad.Of(expectedValue, expectedTimeType, expectedWorkerType));
             activity.WorkLoad.Value.Is(expectedValue);
             activity.WorkLoad.TimeUnit.Is(expectedTimeType);
-            activity.WorkLoad.WorkerUnit.Is(expectedWorkerType);
+            activity.WorkLoad.ResourceUnit.Is(expectedWorkerType);
         }
 
         [TestMethod]
@@ -121,6 +122,37 @@ namespace Kussy.Analysis.Project.Core
             activity.Risk.FailRate.Is(expectedFailRate);
             activity.Risk.ReworkRate.Is(expectedReworkRate);
             activity.Risk.CostOverRate.Is(expectedCostOverRate);
+        }
+
+        [TestMethod]
+        public void アクティビティの初期状態は資源未割当であるべき()
+        {
+            var activity = new Activity();
+            activity.Resources.IsNotNull();
+            activity.Resources.Count().Is(0);
+        }
+
+        [TestMethod]
+        public void アクティビティの資源割当は追加的であるべき()
+        {
+            var activity = new Activity();
+            var resources = new[] { Resource.Of(1m, 1m) };
+            activity.Assign(resources);
+            activity.Resources.Count().Is(1);
+            resources = new[] { Resource.Of(2m, 2m) };
+            activity.Assign(resources);
+            activity.Resources.Count().Is(2);
+        }
+
+        [TestMethod]
+        public void アクティビティの資源割当解除を行うと初期状態に戻るべき()
+        {
+            var activity = new Activity();
+            var resources = new[] { Resource.Of(1m, 1m) };
+            activity.Assign(resources);
+            activity.UnAssign();
+            activity.Resources.IsNotNull();
+            activity.Resources.Count().Is(0);
         }
     }
 }

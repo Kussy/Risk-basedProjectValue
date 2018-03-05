@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Kussy.Analysis.Project.Core
 {
     /// <summary>作業を表現するクラス</summary>
     /// <remarks>非常に多くの能力を持つために肥大化した場合を検討しておく</remarks>
-    public class Activity : IProgressable,
-        IEstimatable
+    public class Activity : IProgressable
+        , IEstimatable
+        , IAssignable
     {
         /// <summary>進捗状態</summary>
         public State State { get; private set; } = State.ToDo;
@@ -19,7 +21,21 @@ namespace Kussy.Analysis.Project.Core
         public Cost DirectCost { get; private set; } = Cost.Of();
         /// <summary>リスク</summary>
         public Risk Risk { get; private set; } = Risk.Of();
+        /// <summary>資源</summary>
+        public IEnumerable<Resource> Resources { get; private set; } = Enumerable.Empty<Resource>();
 
+        /// <summary>資源群を割当てる</summary>
+        /// <param name="resources">資源群</param>
+        public void Assign(IEnumerable<Resource> resources)
+        {
+            Resources = Resources.Concat(resources);
+        }
+
+        /// <summary>資源割当を解除する</summary>
+        public void UnAssign()
+        {
+            Resources = Enumerable.Empty<Resource>();
+        }
         /// <summary>作業量見積</summary>
         /// <param name="workLoad">作業量</param>
         public void Estimate(WorkLoad workLoad)
