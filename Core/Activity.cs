@@ -8,6 +8,7 @@ namespace Kussy.Analysis.Project.Core
     public class Activity : IProgressable
         , IEstimatable
         , IAssignable
+        , INetworkable
     {
         /// <summary>進捗状態</summary>
         public State State { get; private set; } = State.ToDo;
@@ -23,6 +24,10 @@ namespace Kussy.Analysis.Project.Core
         public Risk Risk { get; private set; } = Risk.Of();
         /// <summary>資源</summary>
         public IEnumerable<Resource> Resources { get; private set; } = Enumerable.Empty<Resource>();
+        /// <summary>先行群</summary>
+        public IEnumerable<INetworkable> Parents { get; private set; } = Enumerable.Empty<INetworkable>();
+        /// <summary>後続群</summary>
+        public IEnumerable<INetworkable> Children { get; private set; } = Enumerable.Empty<INetworkable>();
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
@@ -76,6 +81,42 @@ namespace Kussy.Analysis.Project.Core
         public void Progress(State state)
         {
             State = state;
+        }
+
+        /// <summary>先行する</summary>
+        /// <param name="child">後続</param>
+        public void Precede(INetworkable child)
+        {
+            if (Children.Contains(child)) return;
+            Children = Children.Union(new[] { child });
+            if (child.Parents.Contains(this)) return;
+            child.Succeed(this);
+        }
+
+        /// <summary>後続する</summary>
+        /// <param name="parent">先行</param>
+        public void Succeed(INetworkable parent)
+        {
+            if (Parents.Contains(parent)) return;
+            Parents = Parents.Union(new[] { parent });
+            if (parent.Parents.Contains(this)) return;
+            parent.Precede(this);
+        }
+
+        /// <summary>分岐する</summary>
+        /// <param name="children">後続群</param>
+        public void Branch(IEnumerable<INetworkable> children)
+        {
+            Children = Children.Union(children);
+            foreach (var child in children) child.Succeed(this);
+        }
+
+        /// <summary>合流する</summary>
+        /// <param name="parents">先行群</param>
+        public void Merge(IEnumerable<INetworkable> parents)
+        {
+            Parents = Parents.Union(parents);
+            foreach (var parent in parents) parent.Precede(this);
         }
     }
 }

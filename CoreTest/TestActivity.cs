@@ -154,5 +154,73 @@ namespace Kussy.Analysis.Project.Core
             activity.Resources.IsNotNull();
             activity.Resources.Count().Is(0);
         }
+
+        [TestMethod]
+        public void アクティビティの初期状態は先行も後続も存在しないべき()
+        {
+            var activity = new Activity();
+            activity.Parents.Count().Is(0);
+            activity.Children.Count().Is(0);
+        }
+
+        [TestMethod]
+        public void 後続アクティビティを指定すると親子の両方に関係が作られるべき()
+        {
+            var parentActivity = new Activity();
+            var childActivity = new Activity();
+            parentActivity.Precede(childActivity);
+
+            parentActivity.Children.Count().Is(1);
+            parentActivity.Children.First().Is(childActivity);
+            childActivity.Parents.Count().Is(1);
+            childActivity.Parents.First().Is(parentActivity);
+        }
+
+        [TestMethod]
+        public void 先行アクティビティを指定すると親子の両方に関係が作られるべき()
+        {
+            var parentActivity = new Activity();
+            var childActivity = new Activity();
+            childActivity.Succeed(parentActivity);
+
+            parentActivity.Children.Count().Is(1);
+            parentActivity.Children.First().Is(childActivity);
+            childActivity.Parents.Count().Is(1);
+            childActivity.Parents.First().Is(parentActivity);
+        }
+
+        [TestMethod]
+        public void 分岐アクティビティを指定すると親子の両方に関係が作られるべき()
+        {
+            var parentActivity = new Activity();
+            var childActivity1 = new Activity();
+            var childActivity2 = new Activity();
+            parentActivity.Branch(new[] { childActivity1, childActivity2 });
+
+            parentActivity.Children.Count().Is(2);
+            parentActivity.Children.Contains(childActivity1).Is(true);
+            parentActivity.Children.Contains(childActivity2).Is(true);
+            childActivity1.Parents.Count().Is(1);
+            childActivity1.Parents.First().Is(parentActivity);
+            childActivity2.Parents.Count().Is(1);
+            childActivity2.Parents.First().Is(parentActivity);
+        }
+
+        [TestMethod]
+        public void 合流アクティビティを指定すると親子の両方に関係が作られるべき()
+        {
+            var parentActivity1 = new Activity();
+            var parentActivity2 = new Activity();
+            var childActivity = new Activity();
+            childActivity.Merge(new[] { parentActivity1, parentActivity2 });
+
+            childActivity.Parents.Count().Is(2);
+            childActivity.Parents.Contains(parentActivity1).Is(true);
+            childActivity.Parents.Contains(parentActivity2).Is(true);
+            parentActivity1.Children.Count().Is(1);
+            parentActivity1.Children.First().Is(childActivity);
+            parentActivity2.Children.Count().Is(1);
+            parentActivity2.Children.First().Is(childActivity);
+        }
     }
 }
