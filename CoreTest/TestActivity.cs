@@ -222,5 +222,75 @@ namespace Kussy.Analysis.Project.Core
             parentActivity2.Children.Count().Is(1);
             parentActivity2.Children.First().Is(childActivity);
         }
+
+        [TestMethod]
+        public void 単一アクティビティの貢献価値はリスク確率と収入によって決まるべきべき()
+        {
+            var activity = new Activity();
+            activity.Estimate(Income.Of(100m, Currency.JPY));
+            activity.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activity.ContributedValue().Value.Is(50m);
+        }
+
+        [TestMethod]
+        public void 単一アクティビティの将来キャッシュフロー期待値はゼロであるべきべき()
+        {
+            var activity = new Activity();
+            activity.Estimate(Income.Of(100m, Currency.JPY));
+            activity.Estimate(Cost.Of(20m, Currency.JPY));
+            activity.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activity.ExpectedCachFlow().Value.Is(0m);
+        }
+
+        [TestMethod]
+        public void 段階的プロジェクト１の貢献価値はアクティビティ期待値は論文と同じものであるべき()
+        {
+            var activityProduct = new Activity();
+            activityProduct.Estimate(Income.Of(0m, Currency.JPY));
+            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Risk.Of(0.1m, 0m, 0m));
+            var activitySales = new Activity();
+            activitySales.Estimate(Income.Of(100m, Currency.JPY));
+            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activityProduct.Precede(activitySales);
+
+            activityProduct.ContributedValue().Value.Is(5m);
+            activitySales.ContributedValue().Value.Is(50m);
+        }
+
+        [TestMethod]
+        public void 段階的プロジェクト２の貢献価値はアクティビティ期待値は論文と同じものであるべき()
+        {
+            var activityProduct = new Activity();
+            activityProduct.Estimate(Income.Of(0m, Currency.JPY));
+            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Risk.Of(0.5m, 0m, 0m));
+            var activitySales = new Activity();
+            activitySales.Estimate(Income.Of(100m, Currency.JPY));
+            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activityProduct.Precede(activitySales);
+
+            activityProduct.ContributedValue().Value.Is(25m);
+            activitySales.ContributedValue().Value.Is(50m);
+        }
+
+        [TestMethod]
+        public void 段階的プロジェクト３の貢献価値はアクティビティ期待値は論文と同じものであるべき()
+        {
+            var activityProduct = new Activity();
+            activityProduct.Estimate(Income.Of(100m, Currency.JPY));
+            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Risk.Of(0.1m, 0m, 0m));
+            var activitySales = new Activity();
+            activitySales.Estimate(Income.Of(0m, Currency.JPY));
+            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activityProduct.Succeed(activitySales);
+
+            activityProduct.ContributedValue().Value.Is(10m);
+            activitySales.ContributedValue().Value.Is(35m);
+        }
     }
 }
