@@ -8,6 +8,19 @@ namespace Kussy.Analysis.Project.Core
     public class TestProject
     {
         [TestMethod]
+        public void 単純プロジェクトのRPVは論文と同じものであるべき()
+        {
+            var activity = new Activity();
+            activity.Estimate(Income.Of(100m, Currency.JPY));
+            activity.Estimate(Cost.Of(20m, Currency.JPY));
+            activity.Estimate(Risk.Of(0.5m, 0m, 0m));
+            var project = new Project();
+            project.AddActivities(new[] { activity });
+            project.RPVstart().Value.Is(30m);
+            project.RPVfinish().Value.Is(80m);
+        }
+
+        [TestMethod]
         public void 段階的プロジェクト１のRPVは論文と同じものであるべき()
         {
             var activityProduct = new Activity();
