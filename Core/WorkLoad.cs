@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Kussy.Analysis.Project.Core
 {
@@ -35,6 +36,55 @@ namespace Kussy.Analysis.Project.Core
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Value;
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static WorkLoad operator +(WorkLoad x, WorkLoad y)
+        {
+            return Of(x.Value + y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>差</returns>
+        public static WorkLoad operator -(WorkLoad x, WorkLoad y)
+        {
+            return Of(x.Value - y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>積</returns>
+        public static WorkLoad operator *(WorkLoad x, decimal y)
+        {
+            return Of(x.Value * y);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>積</returns>
+        public static WorkLoad operator *(decimal x, WorkLoad y)
+        {
+            return Of(x * y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>積</returns>
+        public static LeadTime operator /(WorkLoad x, IEnumerable<Resource> y)
+        {
+            Contract.Requires(y != null);
+            Contract.Requires(y.Count() != 0);
+            Contract.Requires(y.All(r => r.Quantity != 0));
+            Contract.Requires(y.All(r => r.Productivity != 0));
+            return LeadTime.Of(x.Value / y.Sum(r => r.Quantity * r.Productivity));
         }
     }
 }

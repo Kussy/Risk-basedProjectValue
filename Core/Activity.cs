@@ -159,7 +159,7 @@ namespace Kussy.Analysis.Project.Core
         {
             return FixTime.Value != 0
                 ? EarliestStart() + FixTime
-                : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
+                : EarliestStart() + WorkLoad / Resources;
         }
 
         /// <summary>最遅着手日を求める</summary>
@@ -168,7 +168,7 @@ namespace Kussy.Analysis.Project.Core
         {
             return FixTime.Value != 0
                 ? LatestFinish() - FixTime
-                : LeadTime.Of(LatestFinish().Value - WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
+                : LatestFinish() - WorkLoad / Resources;
         }
 
         /// <summary>最遅完了日を求める</summary>
