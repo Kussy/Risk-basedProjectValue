@@ -51,7 +51,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>演算子のオーバーロード</summary>
         /// <param name="x">1項</param>
         /// <param name="y">2項</param>
-        /// <returns>和</returns>
+        /// <returns>差</returns>
         public static Money operator -(Money x, Money y)
         {
             return Of(x.Value - y.Value);
@@ -60,7 +60,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>演算子のオーバーロード</summary>
         /// <param name="x">1項</param>
         /// <param name="y">2項</param>
-        /// <returns>和</returns>
+        /// <returns>積</returns>
         public static Money operator *(Money x, decimal y)
         {
             return Of(x.Value * y);
@@ -69,7 +69,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>演算子のオーバーロード</summary>
         /// <param name="x">1項</param>
         /// <param name="y">2項</param>
-        /// <returns>和</returns>
+        /// <returns>積</returns>
         public static Money operator *(decimal x, Money y)
         {
             return Of(x * y.Value);
