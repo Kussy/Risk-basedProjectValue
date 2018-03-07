@@ -35,11 +35,9 @@ namespace Kussy.Analysis.Project.Core
         public void 見積後のアクティビティの収入は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedCurrency = Currency.USD;
             var activity = new Activity();
-            activity.Estimate(Income.Of(expectedValue, expectedCurrency));
+            activity.Estimate(Income.Of(expectedValue));
             activity.Income.Value.Is(expectedValue);
-            activity.Income.Currency.Is(expectedCurrency);
         }
 
         [TestMethod]
@@ -53,11 +51,9 @@ namespace Kussy.Analysis.Project.Core
         public void 見積後のアクティビティの支出は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedCurrency = Currency.USD;
             var activity = new Activity();
-            activity.Estimate(Cost.Of(expectedValue, expectedCurrency));
+            activity.Estimate(Cost.Of(expectedValue));
             activity.DirectCost.Value.Is(expectedValue);
-            activity.DirectCost.Currency.Is(expectedCurrency);
         }
 
         [TestMethod]
@@ -71,14 +67,10 @@ namespace Kussy.Analysis.Project.Core
         public void 見積後のアクティビティの作業量は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedTimeType = TimeType.Day;
-            var expectedWorkerType = ResourceType.Human;
 
             var activity = new Activity();
-            activity.Estimate(WorkLoad.Of(expectedValue, expectedTimeType, expectedWorkerType));
+            activity.Estimate(WorkLoad.Of(expectedValue));
             activity.WorkLoad.Value.Is(expectedValue);
-            activity.WorkLoad.TimeUnit.Is(expectedTimeType);
-            activity.WorkLoad.ResourceUnit.Is(expectedWorkerType);
         }
 
         [TestMethod]
@@ -86,19 +78,16 @@ namespace Kussy.Analysis.Project.Core
         {
             var activity = new Activity();
             activity.FixTime.Value.Is(0m);
-            activity.FixTime.TimeUnit.Is(TimeType.Day);
         }
 
         [TestMethod]
         public void 見積後のアクティビティの固定時間は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedTimeType = TimeType.Day;
 
             var activity = new Activity();
-            activity.Estimate(LeadTime.Of(expectedValue, expectedTimeType));
+            activity.Estimate(LeadTime.Of(expectedValue));
             activity.FixTime.Value.Is(expectedValue);
-            activity.FixTime.TimeUnit.Is(expectedTimeType);
         }
 
         [TestMethod]
@@ -227,7 +216,7 @@ namespace Kussy.Analysis.Project.Core
         public void 単一アクティビティの貢献価値はリスク確率と収入によって決まるべきべき()
         {
             var activity = new Activity();
-            activity.Estimate(Income.Of(100m, Currency.JPY));
+            activity.Estimate(Income.Of(100m));
             activity.Estimate(Risk.Of(0.5m, 0m, 0m));
             activity.ContributedValue().Value.Is(50m);
         }
@@ -236,8 +225,8 @@ namespace Kussy.Analysis.Project.Core
         public void 単一アクティビティの将来キャッシュフロー期待値はゼロであるべきべき()
         {
             var activity = new Activity();
-            activity.Estimate(Income.Of(100m, Currency.JPY));
-            activity.Estimate(Cost.Of(20m, Currency.JPY));
+            activity.Estimate(Income.Of(100m));
+            activity.Estimate(Cost.Of(20m));
             activity.Estimate(Risk.Of(0.5m, 0m, 0m));
             activity.ExpectedCachFlow().Value.Is(0m);
         }
@@ -246,12 +235,12 @@ namespace Kussy.Analysis.Project.Core
         public void 段階的プロジェクト１の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
             var activityProduct = new Activity();
-            activityProduct.Estimate(Income.Of(0m, Currency.JPY));
-            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Income.Of(0m));
+            activityProduct.Estimate(Cost.Of(20m));
             activityProduct.Estimate(Risk.Of(0.1m, 0m, 0m));
             var activitySales = new Activity();
-            activitySales.Estimate(Income.Of(100m, Currency.JPY));
-            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Income.Of(100m));
+            activitySales.Estimate(Cost.Of(0m));
             activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
             activityProduct.Precede(activitySales);
 
@@ -263,12 +252,12 @@ namespace Kussy.Analysis.Project.Core
         public void 段階的プロジェクト２の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
             var activityProduct = new Activity();
-            activityProduct.Estimate(Income.Of(0m, Currency.JPY));
-            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Income.Of(0m));
+            activityProduct.Estimate(Cost.Of(20m));
             activityProduct.Estimate(Risk.Of(0.5m, 0m, 0m));
             var activitySales = new Activity();
-            activitySales.Estimate(Income.Of(100m, Currency.JPY));
-            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Income.Of(100m));
+            activitySales.Estimate(Cost.Of(0m));
             activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
             activityProduct.Precede(activitySales);
 
@@ -280,12 +269,12 @@ namespace Kussy.Analysis.Project.Core
         public void 段階的プロジェクト３の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
             var activityProduct = new Activity();
-            activityProduct.Estimate(Income.Of(100m, Currency.JPY));
-            activityProduct.Estimate(Cost.Of(20m, Currency.JPY));
+            activityProduct.Estimate(Income.Of(100m));
+            activityProduct.Estimate(Cost.Of(20m));
             activityProduct.Estimate(Risk.Of(0.1m, 0m, 0m));
             var activitySales = new Activity();
-            activitySales.Estimate(Income.Of(0m, Currency.JPY));
-            activitySales.Estimate(Cost.Of(0m, Currency.JPY));
+            activitySales.Estimate(Income.Of(0m));
+            activitySales.Estimate(Cost.Of(0m));
             activitySales.Estimate(Risk.Of(0.5m, 0m, 0m));
             activityProduct.Succeed(activitySales);
 
@@ -297,7 +286,7 @@ namespace Kussy.Analysis.Project.Core
         public void 単純プロジェクトのCPMはアクティビティの値そのものであるべき()
         {
             var activity = new Activity();
-            activity.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity.Estimate(LeadTime.Of(5m));
             activity.EarliestStart().Value.Is(0m);
             activity.EarliestFinish().Value.Is(5m);
             activity.LatestStart().Value.Is(0m);
@@ -309,9 +298,9 @@ namespace Kussy.Analysis.Project.Core
         public void 段階的プロジェクトのCPMはアクティビティの値の和であるべき()
         {
             var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Estimate(WorkLoad.Of(10m));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
             activity1.Precede(activity2);
 
@@ -332,12 +321,12 @@ namespace Kussy.Analysis.Project.Core
         public void 分岐ありプロジェクトのCPMはアクティビティの値の最大値であるべき()
         {
             var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Estimate(WorkLoad.Of(10m));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
             var activity3 = new Activity();
-            activity3.Estimate(LeadTime.Of(3m, TimeType.Day));
+            activity3.Estimate(LeadTime.Of(3m));
             activity3.Merge(new[] { activity1, activity2 });
 
             activity1.EarliestStart().Value.Is(0m);
