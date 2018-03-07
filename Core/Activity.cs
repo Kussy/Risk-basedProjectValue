@@ -157,7 +157,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime EarliestFinish()
         {
             return FixTime.Value != 0
-                ? LeadTime.Of(EarliestStart().Value + FixTime.Value)
+                ? EarliestStart()+ FixTime
                 : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
         }
 
@@ -166,7 +166,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime LatestStart()
         {
             return FixTime.Value != 0
-                ? LeadTime.Of(LatestFinish().Value - FixTime.Value)
+                ? LatestFinish() - FixTime
                 : LeadTime.Of(LatestFinish().Value - WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
         }
 

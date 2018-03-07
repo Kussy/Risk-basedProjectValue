@@ -37,5 +37,41 @@ namespace Kussy.Analysis.Project.Core
         {
             yield return Value;
         }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static LeadTime operator +(LeadTime x, LeadTime y)
+        {
+            return Of(x.Value + y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>差</returns>
+        public static LeadTime operator -(LeadTime x, LeadTime y)
+        {
+            return Of(x.Value - y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>積</returns>
+        public static LeadTime operator *(LeadTime x, decimal y)
+        {
+            return Of(x.Value * y);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>積</returns>
+        public static LeadTime operator *(decimal x, LeadTime y)
+        {
+            return Of(x * y.Value);
+        }
     }
 }
