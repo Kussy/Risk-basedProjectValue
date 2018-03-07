@@ -126,23 +126,20 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>貢献価値</returns>
         public Money ContributedValue()
         {
-            var value = Risk.FailRate * (Income.Value + ExpectedCachFlow().Value);
-            return Money.Of(value);
+            return Risk.FailRate * (Income + ExpectedCachFlow());
         }
 
         /// <summary>将来キャッシュフローを求める</summary>
         /// <returns>将来キャッシュフロー</returns>
         public Money ExpectedCachFlow()
         {
-            if (Children.Count() == 0)
-            {
-                return Money.Of(0m);
-            }
+            if (Children.Count() == 0) return Money.Of(0m);
+
             var value = Children.Sum(c => {
                 var child = (c as Activity);
-                return (1m - child.Risk.FailRate)
-                * (child.Income.Value + child.ExpectedCachFlow().Value)
-                - child.DirectCost.Value;
+                return ((1m - child.Risk.FailRate)
+                * (child.Income + child.ExpectedCachFlow())
+                - child.DirectCost).Value;
             });
             return Money.Of(value);
         }

@@ -38,5 +38,41 @@ namespace Kussy.Analysis.Project.Core
         {
             yield return Value;
         }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static Money operator +(Money x, Money y)
+        {
+            return Of(x.Value + y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static Money operator -(Money x, Money y)
+        {
+            return Of(x.Value - y.Value);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static Money operator *(Money x, decimal y)
+        {
+            return Of(x.Value * y);
+        }
+
+        /// <summary>演算子のオーバーロード</summary>
+        /// <param name="x">1項</param>
+        /// <param name="y">2項</param>
+        /// <returns>和</returns>
+        public static Money operator *(decimal x, Money y)
+        {
+            return Of(x * y.Value);
+        }
     }
 }
