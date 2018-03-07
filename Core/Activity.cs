@@ -135,7 +135,8 @@ namespace Kussy.Analysis.Project.Core
         {
             if (Children.Count() == 0) return Money.Of(0m);
 
-            var value = Children.Sum(c => {
+            var value = Children.Sum(c =>
+            {
                 var child = (c as Activity);
                 return ((1m - child.Risk.FailRate)
                 * (child.Income + child.ExpectedCachFlow())
@@ -149,7 +150,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime EarliestStart()
         {
             if (Parents.Count() == 0) return LeadTime.Of(0m);
-            return LeadTime.Of(Parents.Max(a => (a as Activity).EarliestFinish().Value));
+            return Parents.Max(a => (a as Activity).EarliestFinish());
         }
 
         /// <summary>最早完了日を求める</summary>
@@ -157,7 +158,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime EarliestFinish()
         {
             return FixTime.Value != 0
-                ? EarliestStart()+ FixTime
+                ? EarliestStart() + FixTime
                 : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
         }
 
@@ -175,14 +176,14 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime LatestFinish()
         {
             if (Children.Count() == 0) return EarliestFinish();
-            return LeadTime.Of(Children.Min(a => (a as Activity).LatestStart().Value));
+            return Children.Min(a => (a as Activity).LatestStart());
         }
 
         /// <summary>フロートを求める</summary>
         /// <returns>フロート</returns>
         public LeadTime Float()
         {
-            return LeadTime.Of(LatestStart().Value - EarliestStart().Value);
+            return LatestStart() - EarliestStart();
         }
     }
 }
