@@ -67,13 +67,11 @@ namespace Kussy.Analysis.Project.Core
         public void 見積後のアクティビティの作業量は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedTimeType = TimeType.Day;
             var expectedWorkerType = ResourceType.Human;
 
             var activity = new Activity();
-            activity.Estimate(WorkLoad.Of(expectedValue, expectedTimeType, expectedWorkerType));
+            activity.Estimate(WorkLoad.Of(expectedValue, expectedWorkerType));
             activity.WorkLoad.Value.Is(expectedValue);
-            activity.WorkLoad.TimeUnit.Is(expectedTimeType);
             activity.WorkLoad.ResourceUnit.Is(expectedWorkerType);
         }
 
@@ -88,7 +86,6 @@ namespace Kussy.Analysis.Project.Core
         public void 見積後のアクティビティの固定時間は与えられたものであるべき()
         {
             var expectedValue = 100m;
-            var expectedTimeType = TimeType.Day;
 
             var activity = new Activity();
             activity.Estimate(LeadTime.Of(expectedValue));
@@ -305,7 +302,7 @@ namespace Kussy.Analysis.Project.Core
             var activity1 = new Activity();
             activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Estimate(WorkLoad.Of(10m, ResourceType.Human));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
             activity1.Precede(activity2);
 
@@ -328,7 +325,7 @@ namespace Kussy.Analysis.Project.Core
             var activity1 = new Activity();
             activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Estimate(WorkLoad.Of(10m, ResourceType.Human));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
             var activity3 = new Activity();
             activity3.Estimate(LeadTime.Of(3m));
