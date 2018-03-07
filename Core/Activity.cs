@@ -11,6 +11,7 @@ namespace Kussy.Analysis.Project.Core
         , IAssignable
         , INetworkable
         , IEvaluable
+        , IPlannable
     {
         /// <summary>進捗状態</summary>
         public State State { get; private set; } = State.ToDo;
@@ -148,6 +149,47 @@ namespace Kussy.Analysis.Project.Core
                 - child.DirectCost.Value;
             });
             return Money.Of(value, currency);
+        }
+
+        /// <summary>最早着手日を求める</summary>
+        /// <returns>最早着手日</returns>
+        public LeadTime EarliestStart()
+        {
+            if (Parents.Count() == 0) return LeadTime.Of(0m, FixTime.TimeUnit);
+            return LeadTime.Of(Parents.Max(a => (a as Activity).EarliestFinish().Value), FixTime.TimeUnit);
+        }
+
+        /// <summary>最早完了日を求める</summary>
+        /// <returns>最早完了日</returns>
+        public LeadTime EarliestFinish()
+        {
+            return FixTime.Value != 0
+                ? LeadTime.Of(EarliestStart().Value + FixTime.Value, FixTime.TimeUnit)
+                : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity), WorkLoad.TimeUnit);
+        }
+
+        /// <summary>最遅着手日を求める</summary>
+        /// <returns>最遅着手日</returns>
+        public LeadTime LatestStart()
+        {
+            return FixTime.Value != 0
+                ? LeadTime.Of(LatestFinish().Value - FixTime.Value, FixTime.TimeUnit)
+                : LeadTime.Of(LatestFinish().Value - WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity), WorkLoad.TimeUnit);
+        }
+
+        /// <summary>最遅完了日を求める</summary>
+        /// <returns>最遅完了日</returns>
+        public LeadTime LatestFinish()
+        {
+            if (Children.Count() == 0) return EarliestFinish();
+            return LeadTime.Of(Children.Min(a => (a as Activity).LatestStart().Value), FixTime.TimeUnit);
+        }
+
+        /// <summary>フロートを求める</summary>
+        /// <returns>フロート</returns>
+        public LeadTime Float()
+        {
+            return LeadTime.Of(LatestStart().Value - EarliestStart().Value, EarliestStart().TimeUnit);
         }
     }
 }
