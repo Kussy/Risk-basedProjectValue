@@ -292,5 +292,71 @@ namespace Kussy.Analysis.Project.Core
             activityProduct.ContributedValue().Value.Is(10m);
             activitySales.ContributedValue().Value.Is(35m);
         }
+
+        [TestMethod]
+        public void 単純プロジェクトのCPMはアクティビティの値そのものであるべき()
+        {
+            var activity = new Activity();
+            activity.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity.EarliestStart().Value.Is(0m);
+            activity.EarliestFinish().Value.Is(5m);
+            activity.LatestStart().Value.Is(0m);
+            activity.LatestFinish().Value.Is(5m);
+            activity.Float().Value.Is(0m);
+        }
+
+        [TestMethod]
+        public void 段階的プロジェクトのCPMはアクティビティの値の和であるべき()
+        {
+            var activity1 = new Activity();
+            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            var activity2 = new Activity();
+            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Assign(new[] { Resource.Of(5m, 1m) });
+            activity1.Precede(activity2);
+
+            activity1.EarliestStart().Value.Is(0m);
+            activity1.EarliestFinish().Value.Is(5m);
+            activity1.LatestStart().Value.Is(0m);
+            activity1.LatestFinish().Value.Is(5m);
+            activity1.Float().Value.Is(0m);
+
+            activity2.EarliestStart().Value.Is(5m);
+            activity2.EarliestFinish().Value.Is(7m);
+            activity2.LatestStart().Value.Is(5m);
+            activity2.LatestFinish().Value.Is(7m);
+            activity2.Float().Value.Is(0m);
+        }
+
+        [TestMethod]
+        public void 分岐ありプロジェクトのCPMはアクティビティの値の最大値であるべき()
+        {
+            var activity1 = new Activity();
+            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            var activity2 = new Activity();
+            activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
+            activity2.Assign(new[] { Resource.Of(5m, 1m) });
+            var activity3 = new Activity();
+            activity3.Estimate(LeadTime.Of(3m, TimeType.Day));
+            activity3.Merge(new[] { activity1, activity2 });
+
+            activity1.EarliestStart().Value.Is(0m);
+            activity1.EarliestFinish().Value.Is(5m);
+            activity1.LatestStart().Value.Is(0m);
+            activity1.LatestFinish().Value.Is(5m);
+            activity1.Float().Value.Is(0m);
+
+            activity2.EarliestStart().Value.Is(0m);
+            activity2.EarliestFinish().Value.Is(2m);
+            activity2.LatestStart().Value.Is(3m);
+            activity2.LatestFinish().Value.Is(5m);
+            activity2.Float().Value.Is(3m);
+
+            activity3.EarliestStart().Value.Is(5m);
+            activity3.EarliestFinish().Value.Is(8m);
+            activity3.LatestStart().Value.Is(5m);
+            activity3.LatestFinish().Value.Is(8m);
+            activity3.Float().Value.Is(0m);
+        }
     }
 }
