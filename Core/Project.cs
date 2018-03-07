@@ -31,8 +31,7 @@ namespace Kussy.Analysis.Project.Core
         public Money RPVstart()
         {
             var value = RPVfinish().Value - Activities.Sum(a => a.ContributedValue().Value);
-            var currency = Activities.First().Income.Currency;
-            return Money.Of(value, currency);
+            return Money.Of(value);
         }
 
         /// <summary>完了時点でのRPVを求める</summary>
@@ -41,12 +40,8 @@ namespace Kussy.Analysis.Project.Core
         {
             Contract.Requires(Activities != null);
             Contract.Requires(Activities.Count() != 0);
-            Contract.Requires(Activities.All(a => a.Income.Currency == a.DirectCost.Currency));
-            Contract.Requires(Activities.Select(a => a.Income.Currency).Distinct().Count() == 1);
-            Contract.Requires(Activities.Select(a => a.DirectCost.Currency).Distinct().Count() == 1);
             var value = Activities.Sum(a => a.Income.Value - a.DirectCost.Value);
-            var currency = Activities.First().Income.Currency;
-            return Money.Of(value, currency);
+            return Money.Of(value);
         }
     }
 }

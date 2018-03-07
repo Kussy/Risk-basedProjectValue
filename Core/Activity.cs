@@ -126,21 +126,17 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>貢献価値</returns>
         public Money ContributedValue()
         {
-            Contract.Requires(Income.Currency.Equals(ExpectedCachFlow().Currency));
             var value = Risk.FailRate * (Income.Value + ExpectedCachFlow().Value);
-            var currency = ExpectedCachFlow().Currency;
-            return Money.Of(value, currency);
+            return Money.Of(value);
         }
 
         /// <summary>将来キャッシュフローを求める</summary>
         /// <returns>将来キャッシュフロー</returns>
         public Money ExpectedCachFlow()
         {
-            Contract.Requires(Income.Currency.Equals(DirectCost.Currency));
-            var currency = Income.Currency;
             if (Children.Count() == 0)
             {
-                return Money.Of(0m, currency);
+                return Money.Of(0m);
             }
             var value = Children.Sum(c => {
                 var child = (c as Activity);
@@ -148,7 +144,7 @@ namespace Kussy.Analysis.Project.Core
                 * (child.Income.Value + child.ExpectedCachFlow().Value)
                 - child.DirectCost.Value;
             });
-            return Money.Of(value, currency);
+            return Money.Of(value);
         }
 
         /// <summary>最早着手日を求める</summary>

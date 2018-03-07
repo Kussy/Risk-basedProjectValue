@@ -16,8 +16,6 @@ namespace Kussy.Analysis.Project.Core
             return new Income()
             {
                 Value = money.Value,
-                Currency = money.Currency,
-
             };
         }
 
@@ -30,13 +28,12 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>静的ファクトリーメソッド</summary>
         /// <param name="value">値</param>
-        /// <param name="currency">通貨</param>
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
-        public new static Income Of(decimal value, Currency currency)
+        public new static Income Of(decimal value)
         {
             Contract.Requires(value >= 0);
 
-            return Of(Money.Of(value, currency));
+            return Of(Money.Of(value));
         }
     }
 }
