@@ -151,8 +151,8 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()
         {
-            if (Parents.Count() == 0) return LeadTime.Of(0m, FixTime.TimeUnit);
-            return LeadTime.Of(Parents.Max(a => (a as Activity).EarliestFinish().Value), FixTime.TimeUnit);
+            if (Parents.Count() == 0) return LeadTime.Of(0m);
+            return LeadTime.Of(Parents.Max(a => (a as Activity).EarliestFinish().Value));
         }
 
         /// <summary>最早完了日を求める</summary>
@@ -160,8 +160,8 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime EarliestFinish()
         {
             return FixTime.Value != 0
-                ? LeadTime.Of(EarliestStart().Value + FixTime.Value, FixTime.TimeUnit)
-                : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity), WorkLoad.TimeUnit);
+                ? LeadTime.Of(EarliestStart().Value + FixTime.Value)
+                : LeadTime.Of(EarliestStart().Value + WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
         }
 
         /// <summary>最遅着手日を求める</summary>
@@ -169,8 +169,8 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime LatestStart()
         {
             return FixTime.Value != 0
-                ? LeadTime.Of(LatestFinish().Value - FixTime.Value, FixTime.TimeUnit)
-                : LeadTime.Of(LatestFinish().Value - WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity), WorkLoad.TimeUnit);
+                ? LeadTime.Of(LatestFinish().Value - FixTime.Value)
+                : LeadTime.Of(LatestFinish().Value - WorkLoad.Value / Resources.Sum(r => r.Quantity * r.Productivity));
         }
 
         /// <summary>最遅完了日を求める</summary>
@@ -178,14 +178,14 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime LatestFinish()
         {
             if (Children.Count() == 0) return EarliestFinish();
-            return LeadTime.Of(Children.Min(a => (a as Activity).LatestStart().Value), FixTime.TimeUnit);
+            return LeadTime.Of(Children.Min(a => (a as Activity).LatestStart().Value));
         }
 
         /// <summary>フロートを求める</summary>
         /// <returns>フロート</returns>
         public LeadTime Float()
         {
-            return LeadTime.Of(LatestStart().Value - EarliestStart().Value, EarliestStart().TimeUnit);
+            return LeadTime.Of(LatestStart().Value - EarliestStart().Value);
         }
     }
 }

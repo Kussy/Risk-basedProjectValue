@@ -82,7 +82,6 @@ namespace Kussy.Analysis.Project.Core
         {
             var activity = new Activity();
             activity.FixTime.Value.Is(0m);
-            activity.FixTime.TimeUnit.Is(TimeType.Day);
         }
 
         [TestMethod]
@@ -92,9 +91,8 @@ namespace Kussy.Analysis.Project.Core
             var expectedTimeType = TimeType.Day;
 
             var activity = new Activity();
-            activity.Estimate(LeadTime.Of(expectedValue, expectedTimeType));
+            activity.Estimate(LeadTime.Of(expectedValue));
             activity.FixTime.Value.Is(expectedValue);
-            activity.FixTime.TimeUnit.Is(expectedTimeType);
         }
 
         [TestMethod]
@@ -293,7 +291,7 @@ namespace Kussy.Analysis.Project.Core
         public void 単純プロジェクトのCPMはアクティビティの値そのものであるべき()
         {
             var activity = new Activity();
-            activity.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity.Estimate(LeadTime.Of(5m));
             activity.EarliestStart().Value.Is(0m);
             activity.EarliestFinish().Value.Is(5m);
             activity.LatestStart().Value.Is(0m);
@@ -305,7 +303,7 @@ namespace Kussy.Analysis.Project.Core
         public void 段階的プロジェクトのCPMはアクティビティの値の和であるべき()
         {
             var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
             activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
@@ -328,12 +326,12 @@ namespace Kussy.Analysis.Project.Core
         public void 分岐ありプロジェクトのCPMはアクティビティの値の最大値であるべき()
         {
             var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m, TimeType.Day));
+            activity1.Estimate(LeadTime.Of(5m));
             var activity2 = new Activity();
             activity2.Estimate(WorkLoad.Of(10m, TimeType.Day, ResourceType.Human));
             activity2.Assign(new[] { Resource.Of(5m, 1m) });
             var activity3 = new Activity();
-            activity3.Estimate(LeadTime.Of(3m, TimeType.Day));
+            activity3.Estimate(LeadTime.Of(3m));
             activity3.Merge(new[] { activity1, activity2 });
 
             activity1.EarliestStart().Value.Is(0m);
