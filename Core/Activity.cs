@@ -129,6 +129,13 @@ namespace Kussy.Analysis.Project.Core
             return Risk.FailRate * (Income + ExpectedCachFlow());
         }
 
+        /// <summary>原始キャッシュフローを求める</summary>
+        /// <returns>原始キャッシュフロー</returns>
+        public Money PrimevalCashFlow()
+        {
+            return Income - DirectCost;
+        }
+
         /// <summary>将来キャッシュフローを求める</summary>
         /// <returns>将来キャッシュフロー</returns>
         public Money ExpectedCachFlow()
