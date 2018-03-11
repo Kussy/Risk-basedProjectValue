@@ -133,12 +133,12 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>将来キャッシュフロー</returns>
         public Money ExpectedCachFlow()
         {
-            if (Children.Count() == 0) return Money.Of(0m);
+            if (Children.Count() == 0) return Money.Of();
 
             var value = Children.Sum(c =>
             {
                 var child = (c as Activity);
-                return ((1m - child.Risk.FailRate)
+                return (child.Risk.SuccessRate
                 * (child.Income + child.ExpectedCachFlow())
                 - child.DirectCost).Value;
             });

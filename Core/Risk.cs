@@ -6,6 +6,8 @@ namespace Kussy.Analysis.Project.Core
     /// <summary>リスク</summary>
     public class Risk : ValueObject
     {
+        /// <summary>成功確率</summary>
+        public decimal SuccessRate { get { return 1m - FailRate; } }
         /// <summary>失敗確率</summary>
         public decimal FailRate { get; private set; } = 0m;
         /// <summary>リワーク確率</summary>
