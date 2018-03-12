@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -126,23 +127,64 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>貢献価値</returns>
         public Money ContributedValue()
         {
-            return Risk.FailRate * (Income + ExpectedCachFlow());
+            return Risk.FailRate * (Income + ExpectedFutureCachFlow());
+        }
+
+        /// <summary>原始キャッシュフローを求める</summary>
+        /// <returns>原始キャッシュフロー</returns>
+        public Money PrimevalCashFlow()
+        {
+            return Income - DirectCost;
+        }
+
+        /// <summary>キャッシュフロー期待値を求める</summary>
+        /// <returns>キャッシュフロー期待値</returns>
+        public Money ExpectedCachFlow()
+        {
+            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * DirectCost;
         }
 
         /// <summary>将来キャッシュフローを求める</summary>
         /// <returns>将来キャッシュフロー</returns>
-        public Money ExpectedCachFlow()
+        public Money ExpectedFutureCachFlow()
         {
-            if (Children.Count() == 0) return Money.Of(0m);
-
-            var value = Children.Sum(c =>
+            // 期待キャッシュフロー合計
+            // 再帰的に呼び出すため宣言を分離
+            Func<IEnumerable<INetworkable>, Money> expectedFutureCachFlow = null;
+            // 引数に並列アクティビティを受け取り、それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
+            expectedFutureCachFlow = actibities =>
             {
-                var child = (c as Activity);
-                return ((1m - child.Risk.FailRate)
-                * (child.Income + child.ExpectedCachFlow())
-                - child.DirectCost).Value;
-            });
-            return Money.Of(value);
+                if (actibities.Count() == 0) return Money.Of();
+                var sum = Money.Of();
+                foreach (Activity actibity in actibities)
+                {
+                    sum +=
+                    actibity.Risk.SuccessRate * actibity.Income -
+                    actibity.DirectCost +
+                    actibity.Risk.SuccessRate * expectedFutureCachFlow(actibity.Children);
+                }
+                return sum;
+            };
+            return expectedFutureCachFlow(Children);
+        }
+
+        /// <summary>到達確率を求める</summary>
+        /// <returns>到達確率</returns>
+        /// <remarks>先行工程が前完了していないと開始できないため、並列でも余事象ではない。</remarks>
+        public decimal ArrivalProbability()
+        {
+            var accumulatedProbability = 1m;
+
+            if (Parents.Count() == 0) return accumulatedProbability;
+
+            foreach (Activity parent in Parents)
+            {
+                accumulatedProbability
+                    = parent.State == State.Done
+                    ? parent.ArrivalProbability()
+                    : parent.ArrivalProbability() * parent.Risk.SuccessRate;
+            }
+            return accumulatedProbability;
         }
 
         /// <summary>最早着手日を求める</summary>
