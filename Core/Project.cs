@@ -30,7 +30,9 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>開始時点のRPV</returns>
         public Money RPVstart()
         {
-            var value = RPVfinish().Value - Activities.Sum(a => a.ContributedValue().Value);
+            Contract.Requires(Activities != null);
+            Contract.Requires(Activities.Count() != 0);
+            var value = Activities.Sum(a => a.ExpectedCachFlow().Value);
             return Money.Of(value);
         }
 

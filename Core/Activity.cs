@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -126,7 +127,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>貢献価値</returns>
         public Money ContributedValue()
         {
-            return Risk.FailRate * (Income + ExpectedCachFlow());
+            return Risk.FailRate * (Income + ExpectedFutureCachFlow());
         }
 
         /// <summary>原始キャッシュフローを求める</summary>
@@ -136,20 +137,35 @@ namespace Kussy.Analysis.Project.Core
             return Income - DirectCost;
         }
 
-        /// <summary>将来キャッシュフローを求める</summary>
-        /// <returns>将来キャッシュフロー</returns>
+        /// <summary>キャッシュフロー期待値を求める</summary>
+        /// <returns>キャッシュフロー期待値</returns>
         public Money ExpectedCachFlow()
         {
-            if (Children.Count() == 0) return Money.Of();
+            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * DirectCost;
+        }
 
-            var value = Children.Sum(c =>
+        /// <summary>将来キャッシュフローを求める</summary>
+        /// <returns>将来キャッシュフロー</returns>
+        public Money ExpectedFutureCachFlow()
+        {
+            // 期待キャッシュフロー合計
+            // 再帰的に呼び出すため宣言を分離
+            Func<IEnumerable<INetworkable>, Money> expectedFutureCachFlow = null;
+            // 引数に並列アクティビティを受け取り、それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
+            expectedFutureCachFlow = actibities =>
             {
-                var child = (c as Activity);
-                return (child.Risk.SuccessRate
-                * (child.Income + child.ExpectedCachFlow())
-                - child.DirectCost).Value;
-            });
-            return Money.Of(value);
+                if (actibities.Count() == 0) return Money.Of();
+                var sum = Money.Of();
+                foreach (Activity actibity in actibities)
+                {
+                    sum +=
+                    actibity.Risk.SuccessRate * actibity.Income -
+                    actibity.DirectCost +
+                    actibity.Risk.SuccessRate * expectedFutureCachFlow(actibity.Children);
+                }
+                return sum;
+            };
+            return expectedFutureCachFlow(Children);
         }
 
         /// <summary>到達確率を求める</summary>

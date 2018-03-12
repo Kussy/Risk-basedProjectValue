@@ -9,9 +9,12 @@
         /// <summary>原始キャッシュフローを求める</summary>
         /// <returns>原始キャッシュフロー</returns>
         Money PrimevalCashFlow();
-        /// <summary>将来キャッシュフローを求める</summary>
-        /// <returns>将来キャッシュフロー</returns>
+        /// <summary>キャッシュフロー期待値を求める</summary>
+        /// <returns>キャッシュフロー期待値</returns>
         Money ExpectedCachFlow();
+        /// <summary>将来キャッシュフロー期待値を求める</summary>
+        /// <returns>将来キャッシュフロー期待値</returns>
+        Money ExpectedFutureCachFlow();
         /// <summary>到達確率を求める</summary>
         /// <returns>到達確率</returns>
         decimal ArrivalProbability();

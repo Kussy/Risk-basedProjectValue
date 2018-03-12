@@ -228,7 +228,7 @@ namespace Kussy.Analysis.Project.Core
             activity.Estimate(Income.Of(100m));
             activity.Estimate(Cost.Of(20m));
             activity.Estimate(Risk.Of(0.5m, 0m, 0m));
-            activity.ExpectedCachFlow().Value.Is(0m);
+            activity.ExpectedFutureCachFlow().Value.Is(0m);
         }
 
         [TestMethod]

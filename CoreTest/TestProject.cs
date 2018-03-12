@@ -76,5 +76,29 @@ namespace Kussy.Analysis.Project.Core
             project.RPVstart().Value.Is(35m);
             project.RPVfinish().Value.Is(80m);
         }
+
+        [TestMethod]
+        public void 三段階プロジェクトのRPVは期待されたものであるべき()
+        {
+            var activityDesign = new Activity();
+            activityDesign.Estimate(Income.Of(100m));
+            activityDesign.Estimate(Cost.Of(20m));
+            activityDesign.Estimate(Risk.Of(0.5m, 0m, 0m));
+            var activityProduct = new Activity();
+            activityProduct.Estimate(Income.Of(200m));
+            activityProduct.Estimate(Cost.Of(80m));
+            activityProduct.Estimate(Risk.Of(0.5m, 0m, 0m));
+            activityProduct.Succeed(activityDesign);
+            var activitySales = new Activity();
+            activitySales.Estimate(Income.Of(1000m));
+            activitySales.Estimate(Cost.Of(200m));
+            activitySales.Estimate(Risk.Of(0.1m, 0m, 0m));
+            activitySales.Succeed(activityProduct);
+            var project = new Project();
+            project.AddActivities(new[] { activityDesign, activityProduct, activitySales });
+
+            project.RPVstart().Value.Is(215m);
+            project.RPVfinish().Value.Is(1000m);
+        }
     }
 }
