@@ -262,8 +262,7 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 単純プロジェクトのCPMはアクティビティの値そのものであるべき()
         {
-            var activity = new Activity();
-            activity.Estimate(LeadTime.Of(5m));
+            var activity = TestHelper.Activity(fixTime: 5m);
             activity.EarliestStart().Value.Is(0m);
             activity.EarliestFinish().Value.Is(5m);
             activity.LatestStart().Value.Is(0m);
@@ -274,11 +273,8 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 段階的プロジェクトのCPMはアクティビティの値の和であるべき()
         {
-            var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m));
-            var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m));
-            activity2.Assign(new[] { Resource.Of(5m, 1m) });
+            var activity1 = TestHelper.Activity(fixTime: 5m);
+            var activity2 = TestHelper.Activity(workLoad: 10m, resourceQuantity: 5m, resourceProductivity: 1m);
             activity1.Precede(activity2);
 
             activity1.EarliestStart().Value.Is(0m);
@@ -297,13 +293,9 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 分岐ありプロジェクトのCPMはアクティビティの値の最大値であるべき()
         {
-            var activity1 = new Activity();
-            activity1.Estimate(LeadTime.Of(5m));
-            var activity2 = new Activity();
-            activity2.Estimate(WorkLoad.Of(10m));
-            activity2.Assign(new[] { Resource.Of(5m, 1m) });
-            var activity3 = new Activity();
-            activity3.Estimate(LeadTime.Of(3m));
+            var activity1 = TestHelper.Activity(fixTime: 5m);
+            var activity2 = TestHelper.Activity(workLoad: 10m, resourceQuantity: 5m, resourceProductivity: 1m);
+            var activity3 = TestHelper.Activity(fixTime: 3m);
             activity3.Merge(new[] { activity1, activity2 });
 
             activity1.EarliestStart().Value.Is(0m);
