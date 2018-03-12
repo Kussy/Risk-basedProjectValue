@@ -152,6 +152,25 @@ namespace Kussy.Analysis.Project.Core
             return Money.Of(value);
         }
 
+        /// <summary>到達確率を求める</summary>
+        /// <returns>到達確率</returns>
+        /// <remarks>先行工程が前完了していないと開始できないため、並列でも余事象ではない。</remarks>
+        public decimal ArrivalProbability()
+        {
+            var accumulatedProbability = 1m;
+
+            if (Parents.Count() == 0) return accumulatedProbability;
+
+            foreach (Activity parent in Parents)
+            {
+                accumulatedProbability
+                    = parent.State == State.Done
+                    ? parent.ArrivalProbability()
+                    : parent.ArrivalProbability() * parent.Risk.SuccessRate;
+            }
+            return accumulatedProbability;
+        }
+
         /// <summary>最早着手日を求める</summary>
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()

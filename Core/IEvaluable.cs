@@ -12,5 +12,8 @@
         /// <summary>将来キャッシュフローを求める</summary>
         /// <returns>将来キャッシュフロー</returns>
         Money ExpectedCachFlow();
+        /// <summary>到達確率を求める</summary>
+        /// <returns>到達確率</returns>
+        decimal ArrivalProbability();
     }
 }
