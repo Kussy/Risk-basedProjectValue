@@ -94,5 +94,31 @@ namespace Kussy.Analysis.Project.Core
             activitySales.Progress(State.Done);
             project.RPV().Value.Is(1000m);
         }
+
+        [TestMethod]
+        public void プロジェクトのDRAGは定義を反映したものであるべき()
+        {
+            var basicDesign = TestHelper.Activity(fixTime: 20);
+            var hardProcurement = TestHelper.Activity(fixTime: 35);
+            var detailDesign = TestHelper.Activity(fixTime: 10);
+            var hardConfiguration = TestHelper.Activity(fixTime: 5);
+            var develop = TestHelper.Activity(fixTime: 20);
+            var testing = TestHelper.Activity(fixTime: 15);
+
+            basicDesign.Branch(new[] { hardProcurement, detailDesign });
+            hardProcurement.Precede(hardConfiguration);
+            detailDesign.Precede(develop);
+            testing.Merge(new[] { hardConfiguration, develop });
+
+            var project = new Project();
+            project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
+
+            basicDesign.Drag().Value.Is(20m);
+            hardProcurement.Drag().Value.Is(10m);
+            hardConfiguration.Drag().Value.Is(5m);
+            detailDesign.Drag().Value.Is(0m);
+            develop.Drag().Value.Is(0m);
+            testing.Drag().Value.Is(15m);
+        }
     }
 }

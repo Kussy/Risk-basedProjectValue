@@ -32,6 +32,31 @@ namespace Kussy.Analysis.Project.Core
         public IEnumerable<INetworkable> Parents { get; private set; } = Enumerable.Empty<INetworkable>();
         /// <summary>後続群</summary>
         public IEnumerable<INetworkable> Children { get; private set; } = Enumerable.Empty<INetworkable>();
+        /// <summary>先祖</summary>
+        public IEnumerable<INetworkable> Ancestors { get
+            {
+                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
+                accumulate = actibities =>
+                {
+                    if (actibities.Count() == 0) return actibities;
+                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Parents)));
+                };
+                return accumulate(Parents);
+            }
+        }
+        /// <summary>子孫</summary>
+        public IEnumerable<INetworkable> Descendants { get
+            {
+                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
+                accumulate = actibities =>
+                {
+                    if (actibities.Count() == 0) return actibities;
+                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Children)));
+                };
+                return accumulate(Children);
+            }
+        }
+
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
@@ -45,6 +70,7 @@ namespace Kussy.Analysis.Project.Core
         {
             Resources = Enumerable.Empty<Resource>();
         }
+
         /// <summary>作業量見積</summary>
         /// <param name="workLoad">作業量</param>
         public void Estimate(WorkLoad workLoad)
@@ -91,6 +117,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="child">後続</param>
         public void Precede(INetworkable child)
         {
+            Contract.Requires(this != child);
+            Contract.Requires(!child.Descendants.Contains(this));
             if (Children.Contains(child)) return;
             Children = Children.Union(new[] { child });
             if (child.Parents.Contains(this)) return;
@@ -101,6 +129,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="parent">先行</param>
         public void Succeed(INetworkable parent)
         {
+            Contract.Requires(this != parent);
+            Contract.Requires(!parent.Ancestors.Contains(this));
             if (Parents.Contains(parent)) return;
             Parents = Parents.Union(new[] { parent });
             if (parent.Parents.Contains(this)) return;
@@ -187,6 +217,19 @@ namespace Kussy.Analysis.Project.Core
             return accumulatedProbability;
         }
 
+        /// <summary>所要期間を求める</summary>
+        /// <returns>所要期間</returns>
+        /// <remarks>
+        /// 固定時間がある場合は固定時間
+        /// 固定時間がない場合は作業量/総資源生産性
+        /// </remarks>
+        public LeadTime Duration()
+        {
+            return FixTime.Value != 0m
+                ? FixTime
+                : WorkLoad / Resources;
+        }
+
         /// <summary>最早着手日を求める</summary>
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()
@@ -199,18 +242,14 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最早完了日</returns>
         public LeadTime EarliestFinish()
         {
-            return FixTime.Value != 0
-                ? EarliestStart() + FixTime
-                : EarliestStart() + WorkLoad / Resources;
+            return EarliestStart() + Duration();
         }
 
         /// <summary>最遅着手日を求める</summary>
         /// <returns>最遅着手日</returns>
         public LeadTime LatestStart()
         {
-            return FixTime.Value != 0
-                ? LatestFinish() - FixTime
-                : LatestFinish() - WorkLoad / Resources;
+            return LatestFinish() - Duration();
         }
 
         /// <summary>最遅完了日を求める</summary>
@@ -226,6 +265,51 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime Float()
         {
             return LatestStart() - EarliestStart();
+        }
+
+        /// <summary>DRAGを求める</summary>
+        /// <returns>DRAG</returns>
+        /// <remarks>
+        /// 非クリティカル・パスならば DRAG＝0
+        /// クリティカル・パスかつ他に並行作業がないならばDRAG＝所要時間
+        /// クリティカル・パスかつ並行作業があるならばDRAG＝並行作業系列のFloat
+        /// 所要時間＜並行作業のFloatならばDRAG＝所要時間
+        /// </remarks>
+        public LeadTime Drag()
+        {
+            if (!IsInCriticalPath())
+            {
+                return LeadTime.Of();
+            }
+            else if (!ExistsParallelActivity())
+            {
+                return Duration();
+            }
+            else
+            {
+                var minParallelFloat = Parents
+                    .SelectMany(a => a.Children)
+                    .Where(a => a != this)
+                    .Min(a => (a as Activity).Float());
+                return Duration().Value < minParallelFloat.Value
+                    ? Duration()
+                    : minParallelFloat;
+            }
+        }
+
+        /// <summary>クリティカル・パスに乗っているかを判定する</summary>
+        /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
+        public bool IsInCriticalPath()
+        {
+            return Float().Value == 0m;
+        }
+
+        /// <summary>並列アクティビティが存在するかを判定する</summary>
+        /// <returns>true:並列あり/false:並列なし</returns>
+        public bool ExistsParallelActivity()
+        {
+            if (Parents.Count() == 0) return false;
+            return Parents.SelectMany(a => a.Children).Distinct().Count() > 1;
         }
     }
 }

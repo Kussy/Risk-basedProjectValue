@@ -213,6 +213,34 @@ namespace Kussy.Analysis.Project.Core
         }
 
         [TestMethod]
+        public void 三段階プロジェクトの最終アクティビティの先祖は二つであるべき()
+        {
+            var activityDesign = TestHelper.Activity();
+            var activityProduct = TestHelper.Activity();
+            var activitySales = TestHelper.Activity();
+            activityProduct.Succeed(activityDesign);
+            activitySales.Succeed(activityProduct);
+
+            activityDesign.Ancestors.Count().Is(0);
+            activityProduct.Ancestors.Count().Is(1);
+            activitySales.Ancestors.Count().Is(2);
+        }
+
+        [TestMethod]
+        public void 三段階プロジェクトの最初アクティビティの子孫は二つであるべき()
+        {
+            var activityDesign = TestHelper.Activity();
+            var activityProduct = TestHelper.Activity();
+            var activitySales = TestHelper.Activity();
+            activityProduct.Succeed(activityDesign);
+            activitySales.Succeed(activityProduct);
+
+            activityDesign.Descendants.Count().Is(2);
+            activityProduct.Descendants.Count().Is(1);
+            activitySales.Descendants.Count().Is(0);
+        }
+
+        [TestMethod]
         public void 単一アクティビティの貢献価値はリスク確率と収入によって決まるべきべき()
         {
             var activity = TestHelper.Activity(income: 100m, failRate: 0.5m);

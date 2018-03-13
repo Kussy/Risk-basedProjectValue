@@ -3,6 +3,9 @@
     /// <summary>計画能力を与える</summary>
     interface IPlannable
     {
+        /// <summary>所要期間を求める</summary>
+        /// <returns>所要期間</returns>
+        LeadTime Duration();
         /// <summary>最早着手日を求める</summary>
         /// <returns>最早着手日</returns>
         LeadTime EarliestStart();
@@ -18,5 +21,14 @@
         /// <summary>フロートを求める</summary>
         /// <returns>フロート</returns>
         LeadTime Float();
+        /// <summary>DRAGを求める</summary>
+        /// <returns>DRAG</returns>
+        LeadTime Drag();
+        /// <summary>クリティカル・パスに乗っているかを判定する</summary>
+        /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
+        bool IsInCriticalPath();
+        /// <summary>並列アクティビティが存在するかを判定する</summary>
+        /// <returns>true:並列あり/false:並列なし</returns>
+        bool ExistsParallelActivity();
     }
 }
