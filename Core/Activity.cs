@@ -32,6 +32,31 @@ namespace Kussy.Analysis.Project.Core
         public IEnumerable<INetworkable> Parents { get; private set; } = Enumerable.Empty<INetworkable>();
         /// <summary>後続群</summary>
         public IEnumerable<INetworkable> Children { get; private set; } = Enumerable.Empty<INetworkable>();
+        /// <summary>先祖</summary>
+        public IEnumerable<INetworkable> Ancestors { get
+            {
+                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
+                accumulate = actibities =>
+                {
+                    if (actibities.Count() == 0) return actibities;
+                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Parents)));
+                };
+                return accumulate(Parents);
+            }
+        }
+        /// <summary>子孫</summary>
+        public IEnumerable<INetworkable> Descendants { get
+            {
+                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
+                accumulate = actibities =>
+                {
+                    if (actibities.Count() == 0) return actibities;
+                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Children)));
+                };
+                return accumulate(Children);
+            }
+        }
+
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
@@ -92,6 +117,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="child">後続</param>
         public void Precede(INetworkable child)
         {
+            Contract.Requires(this != child);
+            Contract.Requires(!child.Descendants.Contains(this));
             if (Children.Contains(child)) return;
             Children = Children.Union(new[] { child });
             if (child.Parents.Contains(this)) return;
@@ -102,6 +129,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="parent">先行</param>
         public void Succeed(INetworkable parent)
         {
+            Contract.Requires(this != parent);
+            Contract.Requires(!parent.Ancestors.Contains(this));
             if (Parents.Contains(parent)) return;
             Parents = Parents.Union(new[] { parent });
             if (parent.Parents.Contains(this)) return;

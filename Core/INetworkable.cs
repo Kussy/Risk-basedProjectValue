@@ -9,6 +9,10 @@ namespace Kussy.Analysis.Project.Core
         IEnumerable<INetworkable> Parents { get; }
         /// <summary>後続群</summary>
         IEnumerable<INetworkable> Children { get; }
+        /// <summary>先祖</summary>
+        IEnumerable<INetworkable> Ancestors { get; }
+        /// <summary>子孫</summary>
+        IEnumerable<INetworkable> Descendants { get; }
 
         /// <summary>先行する</summary>
         /// <param name="child">後続</param>
