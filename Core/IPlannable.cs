@@ -18,6 +18,9 @@
         /// <summary>フロートを求める</summary>
         /// <returns>フロート</returns>
         LeadTime Float();
+        /// <summary>DRAGを求める</summary>
+        /// <returns>DRAG</returns>
+        LeadTime Drag();
         /// <summary>クリティカル・パスに乗っているかを判定する</summary>
         /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
         bool IsInCriticalPath();

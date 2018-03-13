@@ -228,6 +228,38 @@ namespace Kussy.Analysis.Project.Core
             return LatestStart() - EarliestStart();
         }
 
+        /// <summary>DRAGを求める</summary>
+        /// <returns>DRAG</returns>
+        /// <remarks>
+        /// 非クリティカル・パスならば DRAG＝0
+        /// クリティカル・パスかつ他に並行作業がないならばDRAG＝所要時間
+        /// クリティカル・パスかつ並行作業があるならばDRAG＝並行作業系列のFloat
+        /// 所要時間＜並行作業のFloatならばDRAG＝所要時間
+        /// </remarks>
+        public LeadTime Drag()
+        {
+            var leadTime = FixTime.Value != 0
+                ? FixTime
+                : WorkLoad / Resources;
+
+            if (!IsInCriticalPath())
+            {
+                return LeadTime.Of();
+            }
+            else if (!ExistsParallelActivity())
+            {
+                return leadTime;
+            }
+            else
+            {
+                var parallels = Parents.SelectMany(a => a.Children).Where(a => a != this);
+                var minFloat = parallels.Min(a => (a as Activity).Float());
+                return leadTime.CompareTo(minFloat) == -1
+                    ? leadTime
+                    : minFloat;
+            }
+        }
+
         /// <summary>クリティカル・パスに乗っているかを判定する</summary>
         /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
         public bool IsInCriticalPath()
