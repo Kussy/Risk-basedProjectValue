@@ -3,6 +3,9 @@
     /// <summary>計画能力を与える</summary>
     interface IPlannable
     {
+        /// <summary>所要期間を求める</summary>
+        /// <returns>所要期間</returns>
+        LeadTime Duration();
         /// <summary>最早着手日を求める</summary>
         /// <returns>最早着手日</returns>
         LeadTime EarliestStart();

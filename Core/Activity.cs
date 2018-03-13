@@ -45,6 +45,7 @@ namespace Kussy.Analysis.Project.Core
         {
             Resources = Enumerable.Empty<Resource>();
         }
+
         /// <summary>作業量見積</summary>
         /// <param name="workLoad">作業量</param>
         public void Estimate(WorkLoad workLoad)
@@ -187,6 +188,19 @@ namespace Kussy.Analysis.Project.Core
             return accumulatedProbability;
         }
 
+        /// <summary>所要期間を求める</summary>
+        /// <returns>所要期間</returns>
+        /// <remarks>
+        /// 固定時間がある場合は固定時間
+        /// 固定時間がない場合は作業量/総資源生産性
+        /// </remarks>
+        public LeadTime Duration()
+        {
+            return FixTime.Value != 0m
+                ? FixTime
+                : WorkLoad / Resources;
+        }
+
         /// <summary>最早着手日を求める</summary>
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()
@@ -199,18 +213,14 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最早完了日</returns>
         public LeadTime EarliestFinish()
         {
-            return FixTime.Value != 0
-                ? EarliestStart() + FixTime
-                : EarliestStart() + WorkLoad / Resources;
+            return EarliestStart() + Duration();
         }
 
         /// <summary>最遅着手日を求める</summary>
         /// <returns>最遅着手日</returns>
         public LeadTime LatestStart()
         {
-            return FixTime.Value != 0
-                ? LatestFinish() - FixTime
-                : LatestFinish() - WorkLoad / Resources;
+            return LatestFinish() - Duration();
         }
 
         /// <summary>最遅完了日を求める</summary>
@@ -238,25 +248,23 @@ namespace Kussy.Analysis.Project.Core
         /// </remarks>
         public LeadTime Drag()
         {
-            var leadTime = FixTime.Value != 0
-                ? FixTime
-                : WorkLoad / Resources;
-
             if (!IsInCriticalPath())
             {
                 return LeadTime.Of();
             }
             else if (!ExistsParallelActivity())
             {
-                return leadTime;
+                return Duration();
             }
             else
             {
-                var parallels = Parents.SelectMany(a => a.Children).Where(a => a != this);
-                var minFloat = parallels.Min(a => (a as Activity).Float());
-                return leadTime.CompareTo(minFloat) == -1
-                    ? leadTime
-                    : minFloat;
+                var minParallelFloat = Parents
+                    .SelectMany(a => a.Children)
+                    .Where(a => a != this)
+                    .Min(a => (a as Activity).Float());
+                return Duration().Value < minParallelFloat.Value
+                    ? Duration()
+                    : minParallelFloat;
             }
         }
 
