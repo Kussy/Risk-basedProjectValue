@@ -24,6 +24,10 @@
         /// <summary>DRAGを求める</summary>
         /// <returns>DRAG</returns>
         LeadTime Drag();
+        /// <summary>DRAGコストを求める</summary>
+        /// <param name="liquidatedDamages">遅延存在賠償金</param>
+        /// <returns>DRAGコスト</returns>
+        Money DragCost(Money liquidatedDamages);
         /// <summary>クリティカル・パスに乗っているかを判定する</summary>
         /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
         bool IsInCriticalPath();

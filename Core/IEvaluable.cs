@@ -18,5 +18,9 @@
         /// <summary>到達確率を求める</summary>
         /// <returns>到達確率</returns>
         decimal ArrivalProbability();
+        /// <summary>本質的コストを求める</summary>
+        /// <param name="liquidatedDamages">遅延損害金</param>
+        /// <returns>本質的コスト</returns>
+        Money IntrinsicCost(Money liquidatedDamages);
     }
 }

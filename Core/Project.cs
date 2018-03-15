@@ -9,6 +9,43 @@ namespace Kussy.Analysis.Project.Core
     {
         /// <summary>アクティビティ群</summary>
         public IEnumerable<Activity> Activities { get; private set; } = Enumerable.Empty<Activity>();
+        /// <summary>プロジェクトの単位通貨</summary>
+        public Currency UnitOfCurrency { get; private set; } = Currency.JPY;
+        /// <summary>プロジェクトの単位時間</summary>
+        public TimeType UnitOfTime { get; private set; } = TimeType.Day;
+        /// <summary>プロジェクト期間</summary>
+        /// <remarks>スケジューラではないため納期ではなく期間を設定する。</remarks>
+        public LeadTime Term { get; private set; } = LeadTime.Of();
+        /// <summary>予算</summary>
+        public Money Badjet { get; private set; } = Money.Of();
+        /// <summary>遅延存在金</summary>
+        /// <remarks>プロジェクトの納期よりも完了が遅れた場合に単位時間あたりに要求される損害賠償金</remarks>
+        public Money LiquidatedDamages { get; private set; } = Money.Of();
+
+        /// <summary>静的ファクトリーメソッド</summary>
+        /// <param name="unitOfCurrency">通貨単位</param>
+        /// <param name="unitOfTime">時間単位</param>
+        /// <param name="term">プロジェクト期間</param>
+        /// <param name="badjet"></param>
+        /// <param name="liquidatedDamages"></param>
+        /// <returns></returns>
+        public static Project Define(
+            Currency unitOfCurrency = Currency.JPY,
+            TimeType unitOfTime = TimeType.Day,
+            decimal term =0m,
+            decimal badjet=0m,
+            decimal liquidatedDamages=0m
+            )
+        {
+            return new Project()
+            {
+                UnitOfCurrency = unitOfCurrency,
+                UnitOfTime = unitOfTime,
+                Term = LeadTime.Of(term),
+                Badjet = Money.Of(badjet),
+                LiquidatedDamages = Money.Of(liquidatedDamages),
+            };
+        }
 
 
         /// <summary>アクティビティ追加</summary>

@@ -98,6 +98,7 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void プロジェクトのDRAGは定義を反映したものであるべき()
         {
+            var liquidatedDamages = Money.Of(5m);
             var basicDesign = TestHelper.Activity(fixTime: 20);
             var hardProcurement = TestHelper.Activity(fixTime: 35);
             var detailDesign = TestHelper.Activity(fixTime: 10);
@@ -114,11 +115,44 @@ namespace Kussy.Analysis.Project.Core
             project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
 
             basicDesign.Drag().Value.Is(20m);
+            basicDesign.DragCost(liquidatedDamages).Value.Is(100m);
             hardProcurement.Drag().Value.Is(10m);
+            hardProcurement.DragCost(liquidatedDamages).Value.Is(50m);
             hardConfiguration.Drag().Value.Is(5m);
+            hardConfiguration.DragCost(liquidatedDamages).Value.Is(25m);
             detailDesign.Drag().Value.Is(0m);
+            detailDesign.DragCost(liquidatedDamages).Value.Is(0m);
             develop.Drag().Value.Is(0m);
+            develop.DragCost(liquidatedDamages).Value.Is(0m);
             testing.Drag().Value.Is(15m);
+            testing.DragCost(liquidatedDamages).Value.Is(75m);
+        }
+
+        [TestMethod]
+        public void プロジェクトの本質的コストはDRAGと作業量を反映したものであるべき()
+        {
+            var liquidatedDamages = Money.Of(5m);
+            var basicDesign = TestHelper.Activity(fixTime: 20, directCost: 10);
+            var hardProcurement = TestHelper.Activity(fixTime: 35, directCost: 100);
+            var detailDesign = TestHelper.Activity(fixTime: 10, directCost: 10);
+            var hardConfiguration = TestHelper.Activity(fixTime: 5, directCost: 50);
+            var develop = TestHelper.Activity(fixTime: 20, directCost: 100);
+            var testing = TestHelper.Activity(fixTime: 15, directCost: 50);
+
+            basicDesign.Branch(new[] { hardProcurement, detailDesign });
+            hardProcurement.Precede(hardConfiguration);
+            detailDesign.Precede(develop);
+            testing.Merge(new[] { hardConfiguration, develop });
+
+            var project = Project.Define(liquidatedDamages: 5m);
+            project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
+
+            basicDesign.IntrinsicCost(project.LiquidatedDamages).Value.Is(110m);
+            hardProcurement.IntrinsicCost(project.LiquidatedDamages).Value.Is(150m);
+            hardConfiguration.IntrinsicCost(project.LiquidatedDamages).Value.Is(75m);
+            detailDesign.IntrinsicCost(project.LiquidatedDamages).Value.Is(10m);
+            develop.IntrinsicCost(project.LiquidatedDamages).Value.Is(100m);
+            testing.IntrinsicCost(project.LiquidatedDamages).Value.Is(125m);
         }
     }
 }
