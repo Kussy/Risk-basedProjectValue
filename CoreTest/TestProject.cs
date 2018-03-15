@@ -127,5 +127,32 @@ namespace Kussy.Analysis.Project.Core
             testing.Drag().Value.Is(15m);
             testing.DragCost(liquidatedDamages).Value.Is(75m);
         }
+
+        [TestMethod]
+        public void プロジェクトの本質的コストはDRAGと作業量を反映したものであるべき()
+        {
+            var liquidatedDamages = Money.Of(5m);
+            var basicDesign = TestHelper.Activity(fixTime: 20, directCost: 10);
+            var hardProcurement = TestHelper.Activity(fixTime: 35, directCost: 100);
+            var detailDesign = TestHelper.Activity(fixTime: 10, directCost: 10);
+            var hardConfiguration = TestHelper.Activity(fixTime: 5, directCost: 50);
+            var develop = TestHelper.Activity(fixTime: 20, directCost: 100);
+            var testing = TestHelper.Activity(fixTime: 15, directCost: 50);
+
+            basicDesign.Branch(new[] { hardProcurement, detailDesign });
+            hardProcurement.Precede(hardConfiguration);
+            detailDesign.Precede(develop);
+            testing.Merge(new[] { hardConfiguration, develop });
+
+            var project = new Project();
+            project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
+
+            basicDesign.IntrinsicCost(liquidatedDamages).Value.Is(110m);
+            hardProcurement.IntrinsicCost(liquidatedDamages).Value.Is(150m);
+            hardConfiguration.IntrinsicCost(liquidatedDamages).Value.Is(75m);
+            detailDesign.IntrinsicCost(liquidatedDamages).Value.Is(10m);
+            develop.IntrinsicCost(liquidatedDamages).Value.Is(100m);
+            testing.IntrinsicCost(liquidatedDamages).Value.Is(125m);
+        }
     }
 }
