@@ -98,6 +98,7 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void プロジェクトのDRAGは定義を反映したものであるべき()
         {
+            var liquidatedDamages = Money.Of(5m);
             var basicDesign = TestHelper.Activity(fixTime: 20);
             var hardProcurement = TestHelper.Activity(fixTime: 35);
             var detailDesign = TestHelper.Activity(fixTime: 10);
@@ -114,11 +115,17 @@ namespace Kussy.Analysis.Project.Core
             project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
 
             basicDesign.Drag().Value.Is(20m);
+            basicDesign.DragCost(liquidatedDamages).Value.Is(100m);
             hardProcurement.Drag().Value.Is(10m);
+            hardProcurement.DragCost(liquidatedDamages).Value.Is(50m);
             hardConfiguration.Drag().Value.Is(5m);
+            hardConfiguration.DragCost(liquidatedDamages).Value.Is(25m);
             detailDesign.Drag().Value.Is(0m);
+            detailDesign.DragCost(liquidatedDamages).Value.Is(0m);
             develop.Drag().Value.Is(0m);
+            develop.DragCost(liquidatedDamages).Value.Is(0m);
             testing.Drag().Value.Is(15m);
+            testing.DragCost(liquidatedDamages).Value.Is(75m);
         }
     }
 }

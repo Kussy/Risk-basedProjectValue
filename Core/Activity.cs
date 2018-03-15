@@ -33,7 +33,9 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>後続群</summary>
         public IEnumerable<INetworkable> Children { get; private set; } = Enumerable.Empty<INetworkable>();
         /// <summary>先祖</summary>
-        public IEnumerable<INetworkable> Ancestors { get
+        public IEnumerable<INetworkable> Ancestors
+        {
+            get
             {
                 Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
                 accumulate = actibities =>
@@ -45,7 +47,9 @@ namespace Kussy.Analysis.Project.Core
             }
         }
         /// <summary>子孫</summary>
-        public IEnumerable<INetworkable> Descendants { get
+        public IEnumerable<INetworkable> Descendants
+        {
+            get
             {
                 Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
                 accumulate = actibities =>
@@ -295,6 +299,14 @@ namespace Kussy.Analysis.Project.Core
                     ? Duration()
                     : minParallelFloat;
             }
+        }
+
+        /// <summary>DRAGコストを求める</summary>
+        /// <param name="liquidatedDamages">遅延存在賠償金</param>
+        /// <returns>DRAGコスト</returns>
+        public Money DragCost(Money liquidatedDamages)
+        {
+            return Drag().Value * liquidatedDamages;
         }
 
         /// <summary>クリティカル・パスに乗っているかを判定する</summary>
