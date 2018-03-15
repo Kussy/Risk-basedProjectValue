@@ -144,15 +144,15 @@ namespace Kussy.Analysis.Project.Core
             detailDesign.Precede(develop);
             testing.Merge(new[] { hardConfiguration, develop });
 
-            var project = new Project();
+            var project = Project.Define(liquidatedDamages: 5m);
             project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
 
-            basicDesign.IntrinsicCost(liquidatedDamages).Value.Is(110m);
-            hardProcurement.IntrinsicCost(liquidatedDamages).Value.Is(150m);
-            hardConfiguration.IntrinsicCost(liquidatedDamages).Value.Is(75m);
-            detailDesign.IntrinsicCost(liquidatedDamages).Value.Is(10m);
-            develop.IntrinsicCost(liquidatedDamages).Value.Is(100m);
-            testing.IntrinsicCost(liquidatedDamages).Value.Is(125m);
+            basicDesign.IntrinsicCost(project.LiquidatedDamages).Value.Is(110m);
+            hardProcurement.IntrinsicCost(project.LiquidatedDamages).Value.Is(150m);
+            hardConfiguration.IntrinsicCost(project.LiquidatedDamages).Value.Is(75m);
+            detailDesign.IntrinsicCost(project.LiquidatedDamages).Value.Is(10m);
+            develop.IntrinsicCost(project.LiquidatedDamages).Value.Is(100m);
+            testing.IntrinsicCost(project.LiquidatedDamages).Value.Is(125m);
         }
     }
 }
