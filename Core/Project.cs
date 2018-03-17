@@ -21,6 +21,11 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>遅延存在金</summary>
         /// <remarks>プロジェクトの納期よりも完了が遅れた場合に単位時間あたりに要求される損害賠償金</remarks>
         public Money LiquidatedDamages { get; private set; } = Money.Of();
+        /// <summary>プロジェクト開始</summary>
+        public Activity Start { get; } = new Activity();
+        /// <summary>プロジェクト完了</summary>
+        public Activity End { get; } = new Activity();
+
 
         /// <summary>静的ファクトリーメソッド</summary>
         /// <param name="unitOfCurrency">通貨単位</param>
@@ -37,14 +42,17 @@ namespace Kussy.Analysis.Project.Core
             decimal liquidatedDamages=0m
             )
         {
-            return new Project()
+            var project = new Project()
             {
                 UnitOfCurrency = unitOfCurrency,
                 UnitOfTime = unitOfTime,
                 Term = LeadTime.Of(term),
                 Badjet = Money.Of(badjet),
-                LiquidatedDamages = Money.Of(liquidatedDamages),
+                LiquidatedDamages = Money.Of(liquidatedDamages),                
             };
+            project.Start.Precede(project.End);
+            project.Activities = new[] { project.Start, project.End };
+            return project;
         }
 
 
@@ -52,14 +60,18 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="activities">アクティビティ群</param>
         public void AddActivities(params Activity[] activities)
         {
-            Activities = Activities.Union(activities);
+            AddActivities(activities as IEnumerable<Activity>);
         }
 
         /// <summary>アクティビティ追加</summary>
         /// <param name="activities">アクティビティ群</param>
         public void AddActivities(IEnumerable<Activity> activities)
         {
+            Start.Branch(activities.Where(a => a.Parents.Count() == 0));
+            End.Merge(activities.Where(a => a.Children.Count() == 0));
             Activities = Activities.Union(activities);
+            if (Start.Children.Any(a => a == End)) Start.Remove(End);
+            if (End.Parents.Any(a => a == Start)) End.Remove(Start);
         }
 
         /// <summary>アクティビティ削除</summary>
