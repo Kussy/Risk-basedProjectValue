@@ -157,6 +157,16 @@ namespace Kussy.Analysis.Project.Core
             foreach (var parent in parents) parent.Precede(this);
         }
 
+        /// <summary>関係を断つ</summary>
+        /// <param name="related">関係者</param>
+        public void Remove(INetworkable related)
+        {
+            if (!Parents.Contains(related) && !Children.Contains(related)) return;
+            Parents = Parents.Except(new[] { related });
+            Children = Children.Except(new[] { related });
+            related.Remove(this);
+        }
+
         /// <summary>貢献価値を求める</summary>
         /// <returns>貢献価値</returns>
         public Money ContributedValue()

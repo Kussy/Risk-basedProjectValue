@@ -18,13 +18,16 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="child">後続</param>
         void Precede(INetworkable child);
         /// <summary>後続する</summary>
-        /// <param name="child">先行</param>
-        void Succeed(INetworkable child);
+        /// <param name="parent">先行</param>
+        void Succeed(INetworkable parent);
         /// <summary>分岐する</summary>
-        /// <param name="child">後続群</param>
-        void Branch(IEnumerable<INetworkable> child);
+        /// <param name="children">後続群</param>
+        void Branch(IEnumerable<INetworkable> children);
         /// <summary>合流する</summary>
-        /// <param name="child">先行群</param>
-        void Merge(IEnumerable<INetworkable> child);
+        /// <param name="parents">先行群</param>
+        void Merge(IEnumerable<INetworkable> parents);
+        /// <summary>関係を断つ</summary>
+        /// <param name="related">関係者</param>
+        void Remove(INetworkable related);
     }
 }
