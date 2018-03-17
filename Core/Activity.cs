@@ -239,9 +239,9 @@ namespace Kussy.Analysis.Project.Core
         /// </remarks>
         public LeadTime Duration()
         {
-            return FixTime.Value != 0m
-                ? FixTime
-                : WorkLoad / Resources;
+            if (FixTime.Value != 0m) return FixTime;
+            else if (WorkLoad.Value == 0m) return LeadTime.Of();
+            else return WorkLoad / Resources;
         }
 
         /// <summary>最早着手日を求める</summary>
