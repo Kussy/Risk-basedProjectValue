@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -7,6 +8,12 @@ namespace Kussy.Analysis.Project.Core
     /// <summary>プロジェクト</summary>
     public class Project
     {
+        /// <summary>GUID</summary>
+        public Guid Guid { get; } = Guid.NewGuid();
+        /// <summary>ユーザー定義ID</summary>
+        public string Id { get; private set; } = string.Empty;
+        /// <summary>名称</summary>
+        public string Name { get; private set; } = string.Empty;
         /// <summary>アクティビティ群</summary>
         public IEnumerable<Activity> Activities { get; private set; } = Enumerable.Empty<Activity>();
         /// <summary>プロジェクトの単位通貨</summary>

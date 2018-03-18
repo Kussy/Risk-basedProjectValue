@@ -14,6 +14,12 @@ namespace Kussy.Analysis.Project.Core
         , IEvaluable
         , IPlannable
     {
+        /// <summary>GUID</summary>
+        public Guid Guid { get; } = Guid.NewGuid();
+        /// <summary>ユーザー定義ID</summary>
+        public string Id { get; private set; } = string.Empty;
+        /// <summary>名称</summary>
+        public string Name { get; private set; } = string.Empty;
         /// <summary>進捗状態</summary>
         public State State { get; private set; } = State.ToDo;
         /// <summary>作業量</summary>
