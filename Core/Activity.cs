@@ -40,7 +40,7 @@ namespace Kussy.Analysis.Project.Core
                 Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
                 accumulate = actibities =>
                 {
-                    if (actibities.Count() == 0) return actibities;
+                    if (actibities.IsEmpty()) return actibities;
                     return actibities.Union(accumulate(actibities.SelectMany(a => a.Parents)));
                 };
                 return accumulate(Parents);
@@ -54,7 +54,7 @@ namespace Kussy.Analysis.Project.Core
                 Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
                 accumulate = actibities =>
                 {
-                    if (actibities.Count() == 0) return actibities;
+                    if (actibities.IsEmpty()) return actibities;
                     return actibities.Union(accumulate(actibities.SelectMany(a => a.Children)));
                 };
                 return accumulate(Children);
@@ -198,7 +198,7 @@ namespace Kussy.Analysis.Project.Core
             // 引数に並列アクティビティを受け取り、それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
             expectedFutureCachFlow = actibities =>
             {
-                if (actibities.Count() == 0) return Money.Of();
+                if (actibities.IsEmpty()) return Money.Of();
                 var sum = Money.Of();
                 foreach (Activity actibity in actibities)
                 {
@@ -219,7 +219,7 @@ namespace Kussy.Analysis.Project.Core
         {
             var accumulatedProbability = 1m;
 
-            if (Parents.Count() == 0) return accumulatedProbability;
+            if (Parents.IsEmpty()) return accumulatedProbability;
 
             foreach (Activity parent in Parents)
             {
@@ -248,7 +248,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()
         {
-            if (Parents.Count() == 0) return LeadTime.Of(0m);
+            if (Parents.IsEmpty()) return LeadTime.Of(0m);
             return Parents.Max(a => (a as Activity).EarliestFinish());
         }
 
@@ -270,7 +270,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最遅完了日</returns>
         public LeadTime LatestFinish()
         {
-            if (Children.Count() == 0) return EarliestFinish();
+            if (Children.IsEmpty()) return EarliestFinish();
             return Children.Min(a => (a as Activity).LatestStart());
         }
 
@@ -330,7 +330,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>true:並列あり/false:並列なし</returns>
         public bool ExistsParallelActivity()
         {
-            if (Parents.Count() == 0) return false;
+            if (Parents.IsEmpty()) return false;
             return Parents.SelectMany(a => a.Children).Distinct().Count() > 1;
         }
 

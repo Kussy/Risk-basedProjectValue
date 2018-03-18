@@ -37,9 +37,9 @@ namespace Kussy.Analysis.Project.Core
         public static Project Define(
             Currency unitOfCurrency = Currency.JPY,
             TimeType unitOfTime = TimeType.Day,
-            decimal term =0m,
-            decimal badjet=0m,
-            decimal liquidatedDamages=0m
+            decimal term = 0m,
+            decimal badjet = 0m,
+            decimal liquidatedDamages = 0m
             )
         {
             var project = new Project()
@@ -48,7 +48,7 @@ namespace Kussy.Analysis.Project.Core
                 UnitOfTime = unitOfTime,
                 Term = LeadTime.Of(term),
                 Badjet = Money.Of(badjet),
-                LiquidatedDamages = Money.Of(liquidatedDamages),                
+                LiquidatedDamages = Money.Of(liquidatedDamages),
             };
             project.Start.Precede(project.End);
             project.Activities = new[] { project.Start, project.End };
@@ -67,8 +67,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="activities">アクティビティ群</param>
         public void AddActivities(IEnumerable<Activity> activities)
         {
-            Start.Branch(activities.Where(a => a.Parents.Count() == 0));
-            End.Merge(activities.Where(a => a.Children.Count() == 0));
+            Start.Branch(activities.Where(a => a.Parents.IsEmpty()));
+            End.Merge(activities.Where(a => a.Children.IsEmpty()));
             Activities = Activities.Union(activities);
             if (Start.Children.Any(a => a == End)) Start.Remove(End);
             if (End.Parents.Any(a => a == Start)) End.Remove(Start);
@@ -85,8 +85,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>開始時点のRPV</returns>
         public Money RPVstart()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
+            Contract.Requires(!Activities.IsNullOrEmpty());
             var value = Activities.Sum(a => a.ExpectedCachFlow().Value);
             return Money.Of(value);
         }
@@ -95,8 +94,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>完了時点のRPV</returns>
         public Money RPVfinish()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
+            Contract.Requires(!Activities.IsNullOrEmpty());
             var value = Activities.Sum(a => a.Income.Value - a.DirectCost.Value);
             return Money.Of(value);
         }
@@ -105,8 +103,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>現時点のキャッシュフロー</returns>
         public Money RPV()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
+            Contract.Requires(!Activities.IsNullOrEmpty());
             var accumulatedCF = Activities
                 .Where(a => (a as Activity).State == State.Done)
                 .Sum(a => (a as Activity).PrimevalCashFlow().Value);

@@ -80,8 +80,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>積</returns>
         public static LeadTime operator /(WorkLoad x, IEnumerable<Resource> y)
         {
-            Contract.Requires(y != null);
-            Contract.Requires(y.Count() != 0);
+            Contract.Requires(!y.IsNullOrEmpty());
             Contract.Requires(y.All(r => r.Quantity != 0));
             Contract.Requires(y.All(r => r.Productivity != 0));
             return LeadTime.Of(x.Value / y.Sum(r => r.Quantity * r.Productivity));
