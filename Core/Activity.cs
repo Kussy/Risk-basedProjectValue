@@ -65,6 +65,44 @@ namespace Kussy.Analysis.Project.Core
             }
         }
 
+        /// <summary>アクティビティを定義する</summary>
+        /// <param name="id">ID</param>
+        /// <param name="name">名称</param>
+        /// <param name="directCost">支出</param>
+        /// <param name="income">収入</param>
+        /// <param name="fixTime">固定時間</param>
+        /// <param name="workLoad">作業量</param>
+        /// <param name="failRate">失敗確率</param>
+        /// <param name="reworkRate">リワーク確率</param>
+        /// <param name="costOverRate">コスト超過確率</param>
+        /// <returns></returns>
+        public static Activity Define(
+            string id = null,
+            string name = null,
+            decimal directCost = 0m,
+            decimal income = 0m,
+            decimal fixTime = 0m,
+            decimal workLoad = 0m,
+            decimal failRate = 0m,
+            decimal reworkRate = 0m,
+            decimal costOverRate = 0m)
+        {
+            Contract.Requires(!id.IsNullOrEmpty());
+            Contract.Requires(!name.IsNullOrEmpty());
+
+            var activity = new Activity()
+            {
+                Id = id,
+                Name = name,
+            };
+            activity.Estimate(Cost.Of(directCost));
+            activity.Estimate(Income.Of(income));
+            activity.Estimate(LeadTime.Of(fixTime));
+            activity.Estimate(WorkLoad.Of(workLoad));
+            activity.Estimate(Risk.Of(failRate: failRate, reworkRate: reworkRate, costOverRate: costOverRate));
+            return activity;
+        }
+
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
         public void Assign(IEnumerable<Resource> resources)
