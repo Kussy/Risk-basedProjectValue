@@ -13,11 +13,11 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>等価な場合はtrue</returns>
         protected static bool EqualOperator(ValueObject left, ValueObject right)
         {
-            if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
+            if(left is null ^ right is null)
             {
                 return false;
             }
-            return ReferenceEquals(left, null) || left.Equals(right);
+            return left is null || left.Equals(right);
         }
 
         /// <summary>非等価比較</summary>
@@ -48,19 +48,18 @@ namespace Kussy.Analysis.Project.Core
             IEnumerator<object> otherValues = other.GetAtomicValues().GetEnumerator();
             while (thisValues.MoveNext() && otherValues.MoveNext())
             {
-                if (ReferenceEquals(thisValues.Current, null) ^
-                    ReferenceEquals(otherValues.Current, null))
-                {
-                    return false;
-                }
+                if (thisValues.Current is null ^ otherValues.Current is null) return false;
 
-                if (thisValues.Current != null &&
-                    !thisValues.Current.Equals(otherValues.Current))
-                {
-                    return false;
-                }
+                if (thisValues.Current != null && !thisValues.Current.Equals(otherValues.Current)) return false;
             }
             return !thisValues.MoveNext() && !otherValues.MoveNext();
+        }
+
+        /// <summary>ハッシュコード生成</summary>
+        /// <returns>現時点では変更なし</returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
         // Other utilility methods
     }
