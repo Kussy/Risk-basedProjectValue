@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Kussy.Analysis.Project.Core
@@ -27,6 +28,17 @@ namespace Kussy.Analysis.Project.Core
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> target)
         {
             return target?.IsEmpty() ?? true;
+        }
+
+        /// <summary>対象がfrom以上to以下の範囲に入っているかを判定する</summary>
+        /// <param name="target">対象</param>
+        /// <param name="from">範囲下限</param>
+        /// <param name="to">範囲上限</param>
+        /// <returns></returns>
+        public static bool IsRangeOf(this decimal target, decimal from, decimal to)
+        {
+            Contract.Requires(from <= to);
+            return target >= from && target <= to;
         }
     }
 }
