@@ -40,5 +40,18 @@ namespace Kussy.Analysis.Project.Core
             Contract.Requires(from <= to);
             return target >= from && target <= to;
         }
+
+        /// <summary>Money型用の集計関数</summary>
+        /// <param name="source">対象</param>
+        /// <returns>集計結果</returns>
+        public static Money Sum(this IEnumerable<Money> source)
+        {
+            var sum = Money.Of();
+            foreach (var item in source)
+            {
+                sum += item;
+            }
+            return sum;
+        }
     }
 }

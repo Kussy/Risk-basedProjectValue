@@ -93,8 +93,7 @@ namespace Kussy.Analysis.Project.Core
         public Money RPVstart()
         {
             Contract.Requires(!Activities.IsNullOrEmpty());
-            var value = Activities.Sum(a => a.ExpectedCachFlow().Value);
-            return Money.Of(value);
+            return Start.ExpectedFutureCachFlow();
         }
 
         /// <summary>完了時点でのRPVを求める</summary>
@@ -102,8 +101,7 @@ namespace Kussy.Analysis.Project.Core
         public Money RPVfinish()
         {
             Contract.Requires(!Activities.IsNullOrEmpty());
-            var value = Activities.Sum(a => a.Income.Value - a.DirectCost.Value);
-            return Money.Of(value);
+            return Activities.Select(a => a.Income - a.DirectCost).Sum();
         }
 
         /// <summary>現時点でのキャッシュフローを求める</summary>
@@ -112,12 +110,14 @@ namespace Kussy.Analysis.Project.Core
         {
             Contract.Requires(!Activities.IsNullOrEmpty());
             var accumulatedCF = Activities
-                .Where(a => (a as Activity).State == State.Done)
-                .Sum(a => (a as Activity).PrimevalCashFlow().Value);
+                .Where(a => a.State == State.Done)
+                .Select(a => a.PrimevalCashFlow())
+                .Sum();
             var futureCF = Activities
-                .Where(a => (a as Activity).State != State.Done)
-                .Sum(a => (a as Activity).ExpectedCachFlow().Value);
-            return Money.Of(accumulatedCF + futureCF);
+                .Where(a => a.State != State.Done)
+                .Select(a => a.ExpectedCachFlow())
+                .Sum();
+            return accumulatedCF + futureCF;
         }
     }
 }
