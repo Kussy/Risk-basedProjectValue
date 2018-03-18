@@ -37,13 +37,12 @@ namespace Kussy.Analysis.Project.Core
         {
             get
             {
-                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
-                accumulate = actibities =>
+                IEnumerable<INetworkable> ancestors(IEnumerable<INetworkable> networkables)
                 {
-                    if (actibities.IsEmpty()) return actibities;
-                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Parents)));
-                };
-                return accumulate(Parents);
+                    if (networkables.IsEmpty()) return networkables;
+                    return networkables.Union(ancestors(networkables.SelectMany(a => a.Parents)));
+                }
+                return ancestors(Parents);
             }
         }
         /// <summary>子孫</summary>
@@ -51,16 +50,14 @@ namespace Kussy.Analysis.Project.Core
         {
             get
             {
-                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
-                accumulate = actibities =>
+                IEnumerable<INetworkable> descendants(IEnumerable<INetworkable> networkables)
                 {
-                    if (actibities.IsEmpty()) return actibities;
-                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Children)));
-                };
-                return accumulate(Children);
+                    if (networkables.IsEmpty()) return networkables;
+                    return networkables.Union(descendants(networkables.SelectMany(a => a.Children)));
+                }
+                return descendants(Children);
             }
         }
-
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
@@ -193,14 +190,12 @@ namespace Kussy.Analysis.Project.Core
         public Money ExpectedFutureCachFlow()
         {
             // 期待キャッシュフロー合計
-            // 再帰的に呼び出すため宣言を分離
-            Func<IEnumerable<INetworkable>, Money> expectedFutureCachFlow = null;
-            // 引数に並列アクティビティを受け取り、それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
-            expectedFutureCachFlow = actibities =>
+            // アクティビティ群それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
+            Money expectedFutureCachFlow(IEnumerable<INetworkable> activities)
             {
-                if (actibities.IsEmpty()) return Money.Of();
+                if (activities.IsEmpty()) return Money.Of();
                 var sum = Money.Of();
-                foreach (Activity actibity in actibities)
+                foreach (Activity actibity in activities)
                 {
                     sum +=
                     actibity.Risk.SuccessRate * actibity.Income -
@@ -208,7 +203,7 @@ namespace Kussy.Analysis.Project.Core
                     actibity.Risk.SuccessRate * expectedFutureCachFlow(actibity.Children);
                 }
                 return sum;
-            };
+            }
             return expectedFutureCachFlow(Children);
         }
 
