@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Kussy.Analysis.Project.Core
 {
     /// <summary>金銭クラス</summary>
-    public class Money : ValueObject
+    public class Money : ValueObject, IComparable<Money>
     {
         /// <summary>値</summary>
         public decimal Value { get; protected set; }
@@ -30,6 +31,17 @@ namespace Kussy.Analysis.Project.Core
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Value;
+        }
+
+        /// <summary>比較</summary>
+        /// <param name="other">比較対象</param>
+        /// <returns>比較結果</returns>
+        public int CompareTo(Money other)
+        {
+            if (other == null) return 1;
+            if (Value > other.Value) return 1;
+            if (Value == other.Value) return 0;
+            return -1;
         }
 
         /// <summary>演算子のオーバーロード</summary>
