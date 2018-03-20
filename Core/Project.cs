@@ -74,8 +74,8 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="activities">アクティビティ群</param>
         public void AddActivities(IEnumerable<Activity> activities)
         {
-            Start.Branch(activities.Where(a => a.Parents.IsEmpty()));
-            End.Merge(activities.Where(a => a.Children.IsEmpty()));
+            Start.Precede(activities.Where(a => a.Parents.IsEmpty()));
+            End.Succeed(activities.Where(a => a.Children.IsEmpty()));
             Activities = Activities.Union(activities);
             if (Start.Children.Any(a => a == End)) Start.Remove(End);
             if (End.Parents.Any(a => a == Start)) End.Remove(Start);

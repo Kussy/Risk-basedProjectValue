@@ -184,7 +184,7 @@ namespace Kussy.Analysis.Project.Core
             var parentActivity = Activity.Define();
             var childActivity1 = Activity.Define();
             var childActivity2 = Activity.Define();
-            parentActivity.Branch(new[] { childActivity1, childActivity2 });
+            parentActivity.Precede(childActivity1, childActivity2);
 
             parentActivity.Children.Count().Is(2);
             parentActivity.Children.Contains(childActivity1).Is(true);
@@ -201,7 +201,7 @@ namespace Kussy.Analysis.Project.Core
             var parentActivity1 = Activity.Define();
             var parentActivity2 = Activity.Define();
             var childActivity = Activity.Define();
-            childActivity.Merge(new[] { parentActivity1, parentActivity2 });
+            childActivity.Succeed(parentActivity1, parentActivity2);
 
             childActivity.Parents.Count().Is(2);
             childActivity.Parents.Contains(parentActivity1).Is(true);
@@ -326,7 +326,7 @@ namespace Kussy.Analysis.Project.Core
             var activity2 = Activity.Define(workLoad: 10m);
             activity2.Assign(Resource.Of(quantity: 5m, productivity: 1m));
             var activity3 = Activity.Define(fixTime: 3m);
-            activity3.Merge(new[] { activity1, activity2 });
+            activity3.Succeed(activity1, activity2);
 
             activity1.EarliestStart().Value.Is(0m);
             activity1.EarliestFinish().Value.Is(5m);

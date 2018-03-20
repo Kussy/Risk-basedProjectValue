@@ -165,42 +165,46 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>先行する</summary>
-        /// <param name="child">後続</param>
-        public void Precede(INetworkable child)
+        /// <param name="children">後続</param>
+        /// <remarks>コーディング補助のためのオーバーライド</remarks>
+        public void Precede(params INetworkable[] children)
         {
-            Contract.Requires(this != child);
-            Contract.Requires(!child.Descendants.Contains(this));
-            if (Children.Contains(child)) return;
-            Children = Children.Union(new[] { child });
-            if (child.Parents.Contains(this)) return;
-            child.Succeed(this);
+            Precede(children as IEnumerable<INetworkable>);
         }
 
-        /// <summary>後続する</summary>
-        /// <param name="parent">先行</param>
-        public void Succeed(INetworkable parent)
+        /// <summary>先行する</summary>
+        /// <param name="children">後続</param>
+        public void Precede(IEnumerable< INetworkable> children)
         {
-            Contract.Requires(this != parent);
-            Contract.Requires(!parent.Ancestors.Contains(this));
-            if (Parents.Contains(parent)) return;
-            Parents = Parents.Union(new[] { parent });
-            if (parent.Parents.Contains(this)) return;
-            parent.Precede(this);
-        }
+            Contract.Requires(!children.Contains(this));
+            Contract.Requires(!children.SelectMany(a => a.Descendants).Contains(this));
 
-        /// <summary>分岐する</summary>
-        /// <param name="children">後続群</param>
-        public void Branch(IEnumerable<INetworkable> children)
-        {
+            if (children.IsNullOrEmpty()) return;
+            if (children.All(a => Children.Contains(a))) return;
             Children = Children.Union(children);
+            if (children.All(a => a.Parents.Contains(this))) return;
             foreach (var child in children) child.Succeed(this);
         }
 
-        /// <summary>合流する</summary>
-        /// <param name="parents">先行群</param>
-        public void Merge(IEnumerable<INetworkable> parents)
+        /// <summary>後続する</summary>
+        /// <param name="parents">先行</param>
+        /// <remarks>コーディング補助のためのオーバーライド</remarks>
+        public void Succeed(params INetworkable[] parents)
         {
+            Succeed(parents as IEnumerable<INetworkable>);
+        }
+
+        /// <summary>後続する</summary>
+        /// <param name="parents">先行</param>
+        public void Succeed(IEnumerable< INetworkable> parents)
+        {
+            Contract.Requires(!parents.Contains(this));
+            Contract.Requires(!parents.SelectMany(a => a.Ancestors).Contains(this));
+
+            if (parents.IsNullOrEmpty()) return;
+            if (parents.All(a => Parents.Contains(a))) return;
             Parents = Parents.Union(parents);
+            if (parents.All(a => a.Parents.Contains(this))) return;
             foreach (var parent in parents) parent.Precede(this);
         }
 

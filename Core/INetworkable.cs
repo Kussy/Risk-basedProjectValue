@@ -15,17 +15,17 @@ namespace Kussy.Analysis.Project.Core
         IEnumerable<INetworkable> Descendants { get; }
 
         /// <summary>先行する</summary>
-        /// <param name="child">後続</param>
-        void Precede(INetworkable child);
+        /// <param name="children">後続</param>
+        void Precede(params INetworkable[] children);
+        /// <summary>先行する</summary>
+        /// <param name="children">後続</param>
+        void Precede(IEnumerable<INetworkable> children);
         /// <summary>後続する</summary>
-        /// <param name="parent">先行</param>
-        void Succeed(INetworkable parent);
-        /// <summary>分岐する</summary>
-        /// <param name="children">後続群</param>
-        void Branch(IEnumerable<INetworkable> children);
-        /// <summary>合流する</summary>
-        /// <param name="parents">先行群</param>
-        void Merge(IEnumerable<INetworkable> parents);
+        /// <param name="parents">先行</param>
+        void Succeed(params INetworkable[] parents);
+        /// <summary>後続する</summary>
+        /// <param name="parents">先行</param>
+        void Succeed(IEnumerable<INetworkable> parents);
         /// <summary>関係を断つ</summary>
         /// <param name="related">関係者</param>
         void Remove(INetworkable related);

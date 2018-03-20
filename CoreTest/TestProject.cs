@@ -133,10 +133,10 @@ namespace Kussy.Analysis.Project.Core
             var develop = Activity.Define(fixTime: 20);
             var testing = Activity.Define(fixTime: 15);
 
-            basicDesign.Branch(new[] { hardProcurement, detailDesign });
+            basicDesign.Precede(hardProcurement, detailDesign);
             hardProcurement.Precede(hardConfiguration);
             detailDesign.Precede(develop);
-            testing.Merge(new[] { hardConfiguration, develop });
+            testing.Succeed(hardConfiguration, develop);
 
             var project = Project.Define();
             project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
@@ -166,10 +166,10 @@ namespace Kussy.Analysis.Project.Core
             var develop = Activity.Define(fixTime: 20, externalCost: 100);
             var testing = Activity.Define(fixTime: 15, externalCost: 50);
 
-            basicDesign.Branch(new[] { hardProcurement, detailDesign });
+            basicDesign.Precede(hardProcurement, detailDesign);
             hardProcurement.Precede(hardConfiguration);
             detailDesign.Precede(develop);
-            testing.Merge(new[] { hardConfiguration, develop });
+            testing.Succeed(hardConfiguration, develop);
 
             var project = Project.Define(liquidatedDamages: 5m);
             project.AddActivities(basicDesign, hardProcurement, hardConfiguration, detailDesign, develop, testing);
