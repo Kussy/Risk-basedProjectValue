@@ -20,16 +20,9 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>静的ファクトリーメソッド</summary>
-        /// <returns>インスタンス初期値</returns>
-        public new static Income Of()
-        {
-            return Of(Money.Of());
-        }
-
-        /// <summary>静的ファクトリーメソッド</summary>
         /// <param name="value">値</param>
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
-        public new static Income Of(decimal value)
+        public new static Income Of(decimal value = 0m)
         {
             Contract.Requires(value >= 0);
 

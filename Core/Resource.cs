@@ -7,27 +7,21 @@ namespace Kussy.Analysis.Project.Core
     public class Resource : ValueObject
     {
         /// <summary>量</summary>
-        public decimal Quantity { get; protected set; } = 0m;
+        public decimal Quantity { get; protected set; }
         /// <summary>生産性</summary>
-        public decimal Productivity { get; protected set; } = 0m;
+        public decimal Productivity { get; protected set; }
         /// <summary>資源種類</summary>
-        public ResourceType Type { get; protected set; } = ResourceType.Unknown;
+        public ResourceType Type { get; protected set; }
 
         /// <summary>プライベートコンストラクタ</summary>
         protected Resource() { }
 
         /// <summary>静的ファクトリーメソッド</summary>
-        /// <returns>インスタンス初期値</returns>
-        public static Resource Of()
-        {
-            return new Resource();
-        }
-
-        /// <summary>静的ファクトリーメソッド</summary>
         /// <param name="quantity">量</param>
         /// <param name="productivity">生産性</param>
+        /// <param name="resourceType">資源種類</param>
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
-        public static Resource Of(decimal quantity, decimal productivity)
+        public static Resource Of(decimal quantity = 0m, decimal productivity = 0m, ResourceType resourceType = ResourceType.Unknown)
         {
             Contract.Requires(quantity >= 0m);
             Contract.Requires(productivity >= 0m);
@@ -36,6 +30,7 @@ namespace Kussy.Analysis.Project.Core
             {
                 Quantity = quantity,
                 Productivity = productivity,
+                Type = resourceType,
             };
         }
 

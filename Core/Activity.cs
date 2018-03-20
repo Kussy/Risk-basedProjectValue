@@ -12,8 +12,13 @@ namespace Kussy.Analysis.Project.Core
         , IAssignable
         , INetworkable
         , IEvaluable
-        , IPlannable
     {
+        /// <summary>GUID</summary>
+        public Guid Guid { get; } = Guid.NewGuid();
+        /// <summary>ユーザー定義ID</summary>
+        public string Id { get; private set; } = string.Empty;
+        /// <summary>名称</summary>
+        public string Name { get; private set; } = string.Empty;
         /// <summary>進捗状態</summary>
         public State State { get; private set; } = State.ToDo;
         /// <summary>作業量</summary>
@@ -23,7 +28,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>収入</summary>
         public Income Income { get; private set; } = Income.Of();
         /// <summary>支出</summary>
-        public Cost DirectCost { get; private set; } = Cost.Of();
+        public Cost ExternalCost { get; private set; } = Cost.Of();
         /// <summary>リスク</summary>
         public Risk Risk { get; private set; } = Risk.Of();
         /// <summary>資源</summary>
@@ -37,13 +42,12 @@ namespace Kussy.Analysis.Project.Core
         {
             get
             {
-                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
-                accumulate = actibities =>
+                IEnumerable<INetworkable> ancestors(IEnumerable<INetworkable> networkables)
                 {
-                    if (actibities.Count() == 0) return actibities;
-                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Parents)));
-                };
-                return accumulate(Parents);
+                    if (networkables.IsEmpty()) return networkables;
+                    return networkables.Union(ancestors(networkables.SelectMany(a => a.Parents)));
+                }
+                return ancestors(Parents);
             }
         }
         /// <summary>子孫</summary>
@@ -51,16 +55,59 @@ namespace Kussy.Analysis.Project.Core
         {
             get
             {
-                Func<IEnumerable<INetworkable>, IEnumerable<INetworkable>> accumulate = null;
-                accumulate = actibities =>
+                IEnumerable<INetworkable> descendants(IEnumerable<INetworkable> networkables)
                 {
-                    if (actibities.Count() == 0) return actibities;
-                    return actibities.Union(accumulate(actibities.SelectMany(a => a.Children)));
-                };
-                return accumulate(Children);
+                    if (networkables.IsEmpty()) return networkables;
+                    return networkables.Union(descendants(networkables.SelectMany(a => a.Children)));
+                }
+                return descendants(Children);
             }
         }
 
+        /// <summary>アクティビティを定義する</summary>
+        /// <param name="id">ID</param>
+        /// <param name="name">名称</param>
+        /// <param name="externalCost">支出</param>
+        /// <param name="income">収入</param>
+        /// <param name="fixTime">固定時間</param>
+        /// <param name="workLoad">作業量</param>
+        /// <param name="failRate">失敗確率</param>
+        /// <param name="reworkRate">リワーク確率</param>
+        /// <param name="costOverRate">コスト超過確率</param>
+        /// <returns></returns>
+        public static Activity Define(
+            string id = null,
+            string name = null,
+            decimal externalCost = 0m,
+            decimal income = 0m,
+            decimal fixTime = 0m,
+            decimal workLoad = 0m,
+            decimal failRate = 0m,
+            decimal reworkRate = 0m,
+            decimal costOverRate = 0m)
+        {
+            Contract.Requires(!id.IsNullOrEmpty());
+            Contract.Requires(!name.IsNullOrEmpty());
+
+            var activity = new Activity()
+            {
+                Id = id,
+                Name = name,
+            };
+            activity.Estimate(Cost.Of(externalCost));
+            activity.Estimate(Income.Of(income));
+            activity.Estimate(LeadTime.Of(fixTime));
+            activity.Estimate(WorkLoad.Of(workLoad));
+            activity.Estimate(Risk.Of(failRate: failRate, reworkRate: reworkRate, costOverRate: costOverRate));
+            return activity;
+        }
+
+        /// <summary>資源群を割当てる</summary>
+        /// <param name="resources">資源群</param>
+        public void Assign(params Resource[] resources)
+        {
+            Assign(resources as IEnumerable<Resource>);
+        }
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
@@ -97,10 +144,10 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>支出見積</summary>
-        /// <param name="directCost">支出</param>
-        public void Estimate(Cost directCost)
+        /// <param name="externalCost">支出</param>
+        public void Estimate(Cost externalCost)
         {
-            DirectCost = directCost;
+            ExternalCost = externalCost;
         }
 
         /// <summary>リスク見積</summary>
@@ -118,42 +165,46 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>先行する</summary>
-        /// <param name="child">後続</param>
-        public void Precede(INetworkable child)
+        /// <param name="children">後続</param>
+        /// <remarks>コーディング補助のためのオーバーライド</remarks>
+        public void Precede(params INetworkable[] children)
         {
-            Contract.Requires(this != child);
-            Contract.Requires(!child.Descendants.Contains(this));
-            if (Children.Contains(child)) return;
-            Children = Children.Union(new[] { child });
-            if (child.Parents.Contains(this)) return;
-            child.Succeed(this);
+            Precede(children as IEnumerable<INetworkable>);
         }
 
-        /// <summary>後続する</summary>
-        /// <param name="parent">先行</param>
-        public void Succeed(INetworkable parent)
+        /// <summary>先行する</summary>
+        /// <param name="children">後続</param>
+        public void Precede(IEnumerable< INetworkable> children)
         {
-            Contract.Requires(this != parent);
-            Contract.Requires(!parent.Ancestors.Contains(this));
-            if (Parents.Contains(parent)) return;
-            Parents = Parents.Union(new[] { parent });
-            if (parent.Parents.Contains(this)) return;
-            parent.Precede(this);
-        }
+            Contract.Requires(!children.Contains(this));
+            Contract.Requires(!children.SelectMany(a => a.Descendants).Contains(this));
 
-        /// <summary>分岐する</summary>
-        /// <param name="children">後続群</param>
-        public void Branch(IEnumerable<INetworkable> children)
-        {
+            if (children.IsNullOrEmpty()) return;
+            if (children.All(a => Children.Contains(a))) return;
             Children = Children.Union(children);
+            if (children.All(a => a.Parents.Contains(this))) return;
             foreach (var child in children) child.Succeed(this);
         }
 
-        /// <summary>合流する</summary>
-        /// <param name="parents">先行群</param>
-        public void Merge(IEnumerable<INetworkable> parents)
+        /// <summary>後続する</summary>
+        /// <param name="parents">先行</param>
+        /// <remarks>コーディング補助のためのオーバーライド</remarks>
+        public void Succeed(params INetworkable[] parents)
         {
+            Succeed(parents as IEnumerable<INetworkable>);
+        }
+
+        /// <summary>後続する</summary>
+        /// <param name="parents">先行</param>
+        public void Succeed(IEnumerable< INetworkable> parents)
+        {
+            Contract.Requires(!parents.Contains(this));
+            Contract.Requires(!parents.SelectMany(a => a.Ancestors).Contains(this));
+
+            if (parents.IsNullOrEmpty()) return;
+            if (parents.All(a => Parents.Contains(a))) return;
             Parents = Parents.Union(parents);
+            if (parents.All(a => a.Parents.Contains(this))) return;
             foreach (var parent in parents) parent.Precede(this);
         }
 
@@ -178,14 +229,14 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>原始キャッシュフロー</returns>
         public Money PrimevalCashFlow()
         {
-            return Income - DirectCost;
+            return Income - ExternalCost;
         }
 
         /// <summary>キャッシュフロー期待値を求める</summary>
         /// <returns>キャッシュフロー期待値</returns>
         public Money ExpectedCachFlow()
         {
-            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * DirectCost;
+            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * ExternalCost;
         }
 
         /// <summary>将来キャッシュフローを求める</summary>
@@ -193,22 +244,20 @@ namespace Kussy.Analysis.Project.Core
         public Money ExpectedFutureCachFlow()
         {
             // 期待キャッシュフロー合計
-            // 再帰的に呼び出すため宣言を分離
-            Func<IEnumerable<INetworkable>, Money> expectedFutureCachFlow = null;
-            // 引数に並列アクティビティを受け取り、それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
-            expectedFutureCachFlow = actibities =>
+            // アクティビティ群それぞれのキャッシュフロー期待値と後続群の期待キャッシュフロー合計を取得する
+            Money expectedFutureCachFlow(IEnumerable<INetworkable> activities)
             {
-                if (actibities.Count() == 0) return Money.Of();
+                if (activities.IsEmpty()) return Money.Of();
                 var sum = Money.Of();
-                foreach (Activity actibity in actibities)
+                foreach (Activity actibity in activities)
                 {
                     sum +=
                     actibity.Risk.SuccessRate * actibity.Income -
-                    actibity.DirectCost +
+                    actibity.ExternalCost +
                     actibity.Risk.SuccessRate * expectedFutureCachFlow(actibity.Children);
                 }
                 return sum;
-            };
+            }
             return expectedFutureCachFlow(Children);
         }
 
@@ -219,7 +268,7 @@ namespace Kussy.Analysis.Project.Core
         {
             var accumulatedProbability = 1m;
 
-            if (Parents.Count() == 0) return accumulatedProbability;
+            if (Parents.IsEmpty()) return accumulatedProbability;
 
             foreach (Activity parent in Parents)
             {
@@ -248,8 +297,8 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最早着手日</returns>
         public LeadTime EarliestStart()
         {
-            if (Parents.Count() == 0) return LeadTime.Of(0m);
-            return Parents.Max(a => (a as Activity).EarliestFinish());
+            if (Parents.IsEmpty()) return LeadTime.Of(0m);
+            return Parents.Max(a => a.EarliestFinish());
         }
 
         /// <summary>最早完了日を求める</summary>
@@ -270,8 +319,8 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>最遅完了日</returns>
         public LeadTime LatestFinish()
         {
-            if (Children.Count() == 0) return EarliestFinish();
-            return Children.Min(a => (a as Activity).LatestStart());
+            if (Children.IsEmpty()) return EarliestFinish();
+            return Children.Min(a => a.LatestStart());
         }
 
         /// <summary>フロートを求める</summary>
@@ -304,7 +353,7 @@ namespace Kussy.Analysis.Project.Core
                 var minParallelFloat = Parents
                     .SelectMany(a => a.Children)
                     .Where(a => a != this)
-                    .Min(a => (a as Activity).Float());
+                    .Min(a => a.Float());
                 return Duration().Value < minParallelFloat.Value
                     ? Duration()
                     : minParallelFloat;
@@ -330,7 +379,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>true:並列あり/false:並列なし</returns>
         public bool ExistsParallelActivity()
         {
-            if (Parents.Count() == 0) return false;
+            if (Parents.IsEmpty()) return false;
             return Parents.SelectMany(a => a.Children).Distinct().Count() > 1;
         }
 
@@ -339,7 +388,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>本質的コスト</returns>
         public Money IntrinsicCost(Money liquidatedDamages)
         {
-            return DirectCost + DragCost(liquidatedDamages);
+            return ExternalCost + DragCost(liquidatedDamages);
         }
     }
 }

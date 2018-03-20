@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -7,6 +8,12 @@ namespace Kussy.Analysis.Project.Core
     /// <summary>プロジェクト</summary>
     public class Project
     {
+        /// <summary>GUID</summary>
+        public Guid Guid { get; } = Guid.NewGuid();
+        /// <summary>ユーザー定義ID</summary>
+        public string Id { get; private set; } = string.Empty;
+        /// <summary>名称</summary>
+        public string Name { get; private set; } = string.Empty;
         /// <summary>アクティビティ群</summary>
         public IEnumerable<Activity> Activities { get; private set; } = Enumerable.Empty<Activity>();
         /// <summary>プロジェクトの単位通貨</summary>
@@ -37,9 +44,9 @@ namespace Kussy.Analysis.Project.Core
         public static Project Define(
             Currency unitOfCurrency = Currency.JPY,
             TimeType unitOfTime = TimeType.Day,
-            decimal term =0m,
-            decimal badjet=0m,
-            decimal liquidatedDamages=0m
+            decimal term = 0m,
+            decimal badjet = 0m,
+            decimal liquidatedDamages = 0m
             )
         {
             var project = new Project()
@@ -48,7 +55,7 @@ namespace Kussy.Analysis.Project.Core
                 UnitOfTime = unitOfTime,
                 Term = LeadTime.Of(term),
                 Badjet = Money.Of(badjet),
-                LiquidatedDamages = Money.Of(liquidatedDamages),                
+                LiquidatedDamages = Money.Of(liquidatedDamages),
             };
             project.Start.Precede(project.End);
             project.Activities = new[] { project.Start, project.End };
@@ -58,17 +65,18 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>アクティビティ追加</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void AddActivities(params Activity[] activities)
+        public void Add(params Activity[] activities)
         {
-            AddActivities(activities as IEnumerable<Activity>);
+            Add(activities as IEnumerable<Activity>);
         }
 
         /// <summary>アクティビティ追加</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void AddActivities(IEnumerable<Activity> activities)
+        public void Add(IEnumerable<Activity> activities)
         {
-            Start.Branch(activities.Where(a => a.Parents.Count() == 0));
-            End.Merge(activities.Where(a => a.Children.Count() == 0));
+            Contract.Requires(!activities.All(a => Activities.Contains(a, b => b.Id)));
+            Start.Precede(activities.Where(a => a.Parents.IsEmpty()));
+            End.Succeed(activities.Where(a => a.Children.IsEmpty()));
             Activities = Activities.Union(activities);
             if (Start.Children.Any(a => a == End)) Start.Remove(End);
             if (End.Parents.Any(a => a == Start)) End.Remove(Start);
@@ -76,7 +84,14 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>アクティビティ削除</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void RemoveActivities(IEnumerable<Activity> activities)
+        public void Remove(params Activity[] activities)
+        {
+            Remove(activities as IEnumerable<Activity>);
+        }
+
+        /// <summary>アクティビティ削除</summary>
+        /// <param name="activities">アクティビティ群</param>
+        public void Remove(IEnumerable<Activity> activities)
         {
             Activities = Activities.Except(activities);
         }
@@ -85,35 +100,32 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>開始時点のRPV</returns>
         public Money RPVstart()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
-            var value = Activities.Sum(a => a.ExpectedCachFlow().Value);
-            return Money.Of(value);
+            Contract.Requires(!Activities.IsNullOrEmpty());
+            return Start.ExpectedFutureCachFlow();
         }
 
         /// <summary>完了時点でのRPVを求める</summary>
         /// <returns>完了時点のRPV</returns>
         public Money RPVfinish()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
-            var value = Activities.Sum(a => a.Income.Value - a.DirectCost.Value);
-            return Money.Of(value);
+            Contract.Requires(!Activities.IsNullOrEmpty());
+            return Activities.Select(a => a.Income - a.ExternalCost).Sum();
         }
 
         /// <summary>現時点でのキャッシュフローを求める</summary>
         /// <returns>現時点のキャッシュフロー</returns>
         public Money RPV()
         {
-            Contract.Requires(Activities != null);
-            Contract.Requires(Activities.Count() != 0);
+            Contract.Requires(!Activities.IsNullOrEmpty());
             var accumulatedCF = Activities
-                .Where(a => (a as Activity).State == State.Done)
-                .Sum(a => (a as Activity).PrimevalCashFlow().Value);
+                .Where(a => a.State == State.Done)
+                .Select(a => a.PrimevalCashFlow())
+                .Sum();
             var futureCF = Activities
-                .Where(a => (a as Activity).State != State.Done)
-                .Sum(a => (a as Activity).ExpectedCachFlow().Value);
-            return Money.Of(accumulatedCF + futureCF);
+                .Where(a => a.State != State.Done)
+                .Select(a => a.ExpectedCachFlow())
+                .Sum();
+            return accumulatedCF + futureCF;
         }
     }
 }

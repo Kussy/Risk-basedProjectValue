@@ -8,22 +8,15 @@ namespace Kussy.Analysis.Project.Core
     public class LeadTime : ValueObject, IComparable<LeadTime>
     {
         /// <summary>値</summary>
-        public decimal Value { get; private set; } = 0m;
+        public decimal Value { get; private set; }
 
         /// <summary>プライベートコンストラクタ</summary>
         private LeadTime() { }
 
         /// <summary>静的ファクトリーメソッド</summary>
-        /// <returns>インスタンス初期値</returns>
-        public static LeadTime Of()
-        {
-            return new LeadTime();
-        }
-
-        /// <summary>静的ファクトリーメソッド</summary>
         /// <param name="value">値</param>
         /// <returns>パラメータと同じ値を持つインスタンス</returns>
-        public static LeadTime Of(decimal value)
+        public static LeadTime Of(decimal value = 0m)
         {
             Contract.Requires(value >= 0);
             return new LeadTime()

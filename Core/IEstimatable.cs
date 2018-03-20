@@ -10,7 +10,7 @@
         /// <summary>収入</summary>
         Income Income { get; }
         /// <summary>支出</summary>
-        Cost DirectCost { get; }
+        Cost ExternalCost { get; }
         /// <summary>リスク</summary>
         Risk Risk { get; }
 
