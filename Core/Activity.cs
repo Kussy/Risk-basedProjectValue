@@ -29,7 +29,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>収入</summary>
         public Income Income { get; private set; } = Income.Of();
         /// <summary>支出</summary>
-        public Cost DirectCost { get; private set; } = Cost.Of();
+        public Cost ExternalCost { get; private set; } = Cost.Of();
         /// <summary>リスク</summary>
         public Risk Risk { get; private set; } = Risk.Of();
         /// <summary>資源</summary>
@@ -68,7 +68,7 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>アクティビティを定義する</summary>
         /// <param name="id">ID</param>
         /// <param name="name">名称</param>
-        /// <param name="directCost">支出</param>
+        /// <param name="externalCost">支出</param>
         /// <param name="income">収入</param>
         /// <param name="fixTime">固定時間</param>
         /// <param name="workLoad">作業量</param>
@@ -79,7 +79,7 @@ namespace Kussy.Analysis.Project.Core
         public static Activity Define(
             string id = null,
             string name = null,
-            decimal directCost = 0m,
+            decimal externalCost = 0m,
             decimal income = 0m,
             decimal fixTime = 0m,
             decimal workLoad = 0m,
@@ -95,7 +95,7 @@ namespace Kussy.Analysis.Project.Core
                 Id = id,
                 Name = name,
             };
-            activity.Estimate(Cost.Of(directCost));
+            activity.Estimate(Cost.Of(externalCost));
             activity.Estimate(Income.Of(income));
             activity.Estimate(LeadTime.Of(fixTime));
             activity.Estimate(WorkLoad.Of(workLoad));
@@ -138,10 +138,10 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>支出見積</summary>
-        /// <param name="directCost">支出</param>
-        public void Estimate(Cost directCost)
+        /// <param name="externalCost">支出</param>
+        public void Estimate(Cost externalCost)
         {
-            DirectCost = directCost;
+            ExternalCost = externalCost;
         }
 
         /// <summary>リスク見積</summary>
@@ -219,14 +219,14 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>原始キャッシュフロー</returns>
         public Money PrimevalCashFlow()
         {
-            return Income - DirectCost;
+            return Income - ExternalCost;
         }
 
         /// <summary>キャッシュフロー期待値を求める</summary>
         /// <returns>キャッシュフロー期待値</returns>
         public Money ExpectedCachFlow()
         {
-            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * DirectCost;
+            return ArrivalProbability() * Risk.SuccessRate * Income - ArrivalProbability() * ExternalCost;
         }
 
         /// <summary>将来キャッシュフローを求める</summary>
@@ -243,7 +243,7 @@ namespace Kussy.Analysis.Project.Core
                 {
                     sum +=
                     actibity.Risk.SuccessRate * actibity.Income -
-                    actibity.DirectCost +
+                    actibity.ExternalCost +
                     actibity.Risk.SuccessRate * expectedFutureCachFlow(actibity.Children);
                 }
                 return sum;
@@ -378,7 +378,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>本質的コスト</returns>
         public Money IntrinsicCost(Money liquidatedDamages)
         {
-            return DirectCost + DragCost(liquidatedDamages);
+            return ExternalCost + DragCost(liquidatedDamages);
         }
     }
 }

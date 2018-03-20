@@ -10,7 +10,7 @@ namespace Kussy.Analysis.Project.Core
     {
         public static Activity Activity(
             decimal income = 0m,
-            decimal directCost = 0m,
+            decimal externalCost = 0m,
             decimal failRate = 0m,
             decimal reworkRate = 0m,
             decimal costoverRate = 0m,
@@ -23,7 +23,7 @@ namespace Kussy.Analysis.Project.Core
         {
             var activity = new Activity();
             activity.Estimate(Income.Of(income));
-            activity.Estimate(Cost.Of(directCost));
+            activity.Estimate(Cost.Of(externalCost));
             activity.Estimate(Risk.Of(failRate, reworkRate, costoverRate));
             activity.Estimate(LeadTime.Of(fixTime));
             activity.Estimate(WorkLoad.Of(workLoad));

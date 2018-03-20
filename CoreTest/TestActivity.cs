@@ -44,7 +44,7 @@ namespace Kussy.Analysis.Project.Core
         public void 見積前のアクティビティの支出はゼロであるべき()
         {
             var activity = Activity.Define();
-            activity.DirectCost.Value.Is(0m);
+            activity.ExternalCost.Value.Is(0m);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Kussy.Analysis.Project.Core
             var expectedValue = 100m;
             var activity = Activity.Define();
             activity.Estimate(Cost.Of(expectedValue));
-            activity.DirectCost.Value.Is(expectedValue);
+            activity.ExternalCost.Value.Is(expectedValue);
         }
 
         [TestMethod]
@@ -250,15 +250,15 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 単一アクティビティの将来キャッシュフロー期待値はゼロであるべきべき()
         {
-            var activity = Activity.Define(income: 100m, directCost: 20m, failRate: 0.5m);
+            var activity = Activity.Define(income: 100m, externalCost: 20m, failRate: 0.5m);
             activity.ExpectedFutureCachFlow().Value.Is(0m);
         }
 
         [TestMethod]
         public void 段階的プロジェクト１の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
-            var activityProduct = Activity.Define(income: 0m, directCost: 20m, failRate: 0.1m);
-            var activitySales = Activity.Define(income: 100m, directCost: 0m, failRate: 0.5m);
+            var activityProduct = Activity.Define(income: 0m, externalCost: 20m, failRate: 0.1m);
+            var activitySales = Activity.Define(income: 100m, externalCost: 0m, failRate: 0.5m);
             activityProduct.Precede(activitySales);
 
             activityProduct.ContributedValue().Value.Is(5m);
@@ -268,8 +268,8 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 段階的プロジェクト２の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
-            var activityProduct = Activity.Define(income: 0m, directCost: 20m, failRate: 0.5m);
-            var activitySales = Activity.Define(income: 100m, directCost: 0m, failRate: 0.5m);
+            var activityProduct = Activity.Define(income: 0m, externalCost: 20m, failRate: 0.5m);
+            var activitySales = Activity.Define(income: 100m, externalCost: 0m, failRate: 0.5m);
             activityProduct.Precede(activitySales);
 
             activityProduct.ContributedValue().Value.Is(25m);
@@ -279,8 +279,8 @@ namespace Kussy.Analysis.Project.Core
         [TestMethod]
         public void 段階的プロジェクト３の貢献価値はアクティビティ期待値は論文と同じものであるべき()
         {
-            var activityProduct = Activity.Define(income: 100m, directCost: 20m, failRate: 0.1m);
-            var activitySales = Activity.Define(income: 0m, directCost: 0m, failRate: 0.5m);
+            var activityProduct = Activity.Define(income: 100m, externalCost: 20m, failRate: 0.1m);
+            var activitySales = Activity.Define(income: 0m, externalCost: 0m, failRate: 0.5m);
             activityProduct.Succeed(activitySales);
 
             activityProduct.ContributedValue().Value.Is(10m);

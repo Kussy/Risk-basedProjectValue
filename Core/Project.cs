@@ -101,7 +101,7 @@ namespace Kussy.Analysis.Project.Core
         public Money RPVfinish()
         {
             Contract.Requires(!Activities.IsNullOrEmpty());
-            return Activities.Select(a => a.Income - a.DirectCost).Sum();
+            return Activities.Select(a => a.Income - a.ExternalCost).Sum();
         }
 
         /// <summary>現時点でのキャッシュフローを求める</summary>
