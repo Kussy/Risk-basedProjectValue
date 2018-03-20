@@ -12,7 +12,6 @@ namespace Kussy.Analysis.Project.Core
         , IAssignable
         , INetworkable
         , IEvaluable
-        , IPlannable
     {
         /// <summary>GUID</summary>
         public Guid Guid { get; } = Guid.NewGuid();
@@ -295,7 +294,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime EarliestStart()
         {
             if (Parents.IsEmpty()) return LeadTime.Of(0m);
-            return Parents.Max(a => (a as Activity).EarliestFinish());
+            return Parents.Max(a => a.EarliestFinish());
         }
 
         /// <summary>最早完了日を求める</summary>
@@ -317,7 +316,7 @@ namespace Kussy.Analysis.Project.Core
         public LeadTime LatestFinish()
         {
             if (Children.IsEmpty()) return EarliestFinish();
-            return Children.Min(a => (a as Activity).LatestStart());
+            return Children.Min(a => a.LatestStart());
         }
 
         /// <summary>フロートを求める</summary>
@@ -350,7 +349,7 @@ namespace Kussy.Analysis.Project.Core
                 var minParallelFloat = Parents
                     .SelectMany(a => a.Children)
                     .Where(a => a != this)
-                    .Min(a => (a as Activity).Float());
+                    .Min(a => a.Float());
                 return Duration().Value < minParallelFloat.Value
                     ? Duration()
                     : minParallelFloat;
