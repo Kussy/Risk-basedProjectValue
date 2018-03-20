@@ -9,10 +9,45 @@ namespace Kussy.Analysis.Project.Core
     /// <summary>コーディングを助ける拡張クラス</summary>
     public static class Extensions
     {
-        /// <summary>対象の列挙可能型が空かどうかを判定する</summary>
+        /// <summary>セレクター用内部クラス</summary>
         /// <typeparam name="T">型</typeparam>
-        /// <param name="target">対象</param>
-        /// <returns>空の場合に真</returns>
+        /// <typeparam name="TKey">キー</typeparam>
+        private sealed class CommonSelector<T, TKey> : IEqualityComparer<T>
+        {
+            private Func<T, TKey> _selector;
+
+            public CommonSelector(Func<T, TKey> selector)
+            {
+                _selector = selector;
+            }
+
+            public bool Equals(T x, T y)
+            {
+                return _selector(x).Equals(_selector(y));
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return _selector(obj).GetHashCode();
+            }
+        }
+
+        /// <summary>Containsの引数にラムダを使えるようにする拡張メソッド</summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <typeparam name="TKey">セレクターキー</typeparam>
+        /// <param name="source">対象</param>
+        /// <param name="value">要素</param>
+        /// <param name="selector">セレクター</param>
+        /// <returns>含まれる場合は真</returns>
+        public static bool Contains<T, TKey>(this IEnumerable<T> source, T value, Func<T, TKey> selector)
+        {
+            return source.Contains(value, new CommonSelector<T, TKey>(selector));
+        }
+        
+        /// <summary>対象の列挙可能型が空かどうかを判定する</summary>
+                 /// <typeparam name="T">型</typeparam>
+                 /// <param name="target">対象</param>
+                 /// <returns>空の場合に真</returns>
         public static bool IsEmpty<T>(this IEnumerable<T> target)
         {
             if (target == null) throw new ArgumentNullException();
