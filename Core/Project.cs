@@ -83,6 +83,13 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>アクティビティ削除</summary>
         /// <param name="activities">アクティビティ群</param>
+        public void Remove(params Activity[] activities)
+        {
+            Remove(activities as IEnumerable<Activity>);
+        }
+
+        /// <summary>アクティビティ削除</summary>
+        /// <param name="activities">アクティビティ群</param>
         public void Remove(IEnumerable<Activity> activities)
         {
             Activities = Activities.Except(activities);
