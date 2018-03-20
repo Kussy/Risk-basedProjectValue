@@ -65,14 +65,14 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>アクティビティ追加</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void AddActivities(params Activity[] activities)
+        public void Add(params Activity[] activities)
         {
-            AddActivities(activities as IEnumerable<Activity>);
+            Add(activities as IEnumerable<Activity>);
         }
 
         /// <summary>アクティビティ追加</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void AddActivities(IEnumerable<Activity> activities)
+        public void Add(IEnumerable<Activity> activities)
         {
             Start.Precede(activities.Where(a => a.Parents.IsEmpty()));
             End.Succeed(activities.Where(a => a.Children.IsEmpty()));
@@ -83,7 +83,7 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>アクティビティ削除</summary>
         /// <param name="activities">アクティビティ群</param>
-        public void RemoveActivities(IEnumerable<Activity> activities)
+        public void Remove(IEnumerable<Activity> activities)
         {
             Activities = Activities.Except(activities);
         }
