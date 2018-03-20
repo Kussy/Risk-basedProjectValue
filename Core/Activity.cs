@@ -105,6 +105,13 @@ namespace Kussy.Analysis.Project.Core
 
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
+        public void Assign(params Resource[] resources)
+        {
+            Assign(resources as IEnumerable<Resource>);
+        }
+
+        /// <summary>資源群を割当てる</summary>
+        /// <param name="resources">資源群</param>
         public void Assign(IEnumerable<Resource> resources)
         {
             Resources = Resources.Concat(resources);

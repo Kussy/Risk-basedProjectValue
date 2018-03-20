@@ -125,11 +125,11 @@ namespace Kussy.Analysis.Project.Core
         public void アクティビティの資源割当は追加的であるべき()
         {
             var activity = Activity.Define();
-            var resources = new[] { Resource.Of(1m, 1m) };
-            activity.Assign(resources);
+            var resource1 = Resource.Of(1m, 1m);
+            var resource2 = Resource.Of(2m, 2m);
+            activity.Assign(resource1);
             activity.Resources.Count().Is(1);
-            resources = new[] { Resource.Of(2m, 2m) };
-            activity.Assign(resources);
+            activity.Assign(resource2);
             activity.Resources.Count().Is(2);
         }
 
@@ -137,8 +137,8 @@ namespace Kussy.Analysis.Project.Core
         public void アクティビティの資源割当解除を行うと初期状態に戻るべき()
         {
             var activity = Activity.Define();
-            var resources = new[] { Resource.Of(1m, 1m) };
-            activity.Assign(resources);
+            var resource = Resource.Of(1m, 1m);
+            activity.Assign(resource);
             activity.UnAssign();
             activity.Resources.IsNotNull();
             activity.Resources.Count().Is(0);
@@ -303,7 +303,7 @@ namespace Kussy.Analysis.Project.Core
         {
             var activity1 = Activity.Define(fixTime: 5m);
             var activity2 = Activity.Define(workLoad: 10m);
-            activity2.Assign(new[] { Resource.Of(quantity: 5m, productivity: 1m) });
+            activity2.Assign(Resource.Of(quantity: 5m, productivity: 1m));
             activity1.Precede(activity2);
 
             activity1.EarliestStart().Value.Is(0m);
@@ -324,7 +324,7 @@ namespace Kussy.Analysis.Project.Core
         {
             var activity1 = Activity.Define(fixTime: 5m);
             var activity2 = Activity.Define(workLoad: 10m);
-            activity2.Assign(new[] { Resource.Of(quantity: 5m, productivity: 1m) });
+            activity2.Assign(Resource.Of(quantity: 5m, productivity: 1m));
             var activity3 = Activity.Define(fixTime: 3m);
             activity3.Merge(new[] { activity1, activity2 });
 

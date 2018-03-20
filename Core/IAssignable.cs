@@ -9,6 +9,9 @@ namespace Kussy.Analysis.Project.Core
         IEnumerable<Resource> Resources { get; }
         /// <summary>資源群を割当てる</summary>
         /// <param name="resources">資源群</param>
+        void Assign(params  Resource[] resources);
+        /// <summary>資源群を割当てる</summary>
+        /// <param name="resources">資源群</param>
         void Assign(IEnumerable<Resource> resources);
         /// <summary>資源割当を解除する</summary>
         void UnAssign();
