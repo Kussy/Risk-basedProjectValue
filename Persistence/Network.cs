@@ -1,17 +1,17 @@
 ﻿namespace Kussy.Analysis.Project.Persistence
 {
-    /// <summary></summary>
+    /// <summary>ネットワーク</summary>
     public class Network
     {
-        /// <summary></summary>
+        /// <summary>先祖ID</summary>
         public int AncestorId { get; set; }
-        /// <summary></summary>
+        /// <summary>先祖</summary>
         public Activity Ancestor { get; set; }
-        /// <summary></summary>
+        /// <summary>子孫ID</summary>
         public int DescendantId { get; set; }
-        /// <summary></summary>
+        /// <summary>子孫</summary>
         public Activity Descendant { get; set; }
-        /// <summary></summary>
+        /// <summary>深さ</summary>
         public int Depth { get; set; }
     }
 }
