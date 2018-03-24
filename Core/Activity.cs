@@ -330,6 +330,13 @@ namespace Kussy.Analysis.Project.Core
             return LatestStart() - EarliestStart();
         }
 
+        /// <summary>フリーフロートを求める</summary>
+        /// <returns>フリーフロート</returns>
+        public LeadTime FreeFloat()
+        {
+            return Children.Min(a=>a.EarliestStart())  - EarliestFinish();
+        }
+
         /// <summary>DRAGを求める</summary>
         /// <returns>DRAG</returns>
         /// <remarks>
