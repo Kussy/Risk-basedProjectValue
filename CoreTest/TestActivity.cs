@@ -295,7 +295,7 @@ namespace Kussy.Analysis.Project.Core
             activity.EarliestFinish().Value.Is(5m);
             activity.LatestStart().Value.Is(0m);
             activity.LatestFinish().Value.Is(5m);
-            activity.Float().Value.Is(0m);
+            activity.TotalFloat().Value.Is(0m);
         }
 
         [TestMethod]
@@ -310,13 +310,13 @@ namespace Kussy.Analysis.Project.Core
             activity1.EarliestFinish().Value.Is(5m);
             activity1.LatestStart().Value.Is(0m);
             activity1.LatestFinish().Value.Is(5m);
-            activity1.Float().Value.Is(0m);
+            activity1.TotalFloat().Value.Is(0m);
 
             activity2.EarliestStart().Value.Is(5m);
             activity2.EarliestFinish().Value.Is(7m);
             activity2.LatestStart().Value.Is(5m);
             activity2.LatestFinish().Value.Is(7m);
-            activity2.Float().Value.Is(0m);
+            activity2.TotalFloat().Value.Is(0m);
         }
 
         [TestMethod]
@@ -332,19 +332,19 @@ namespace Kussy.Analysis.Project.Core
             activity1.EarliestFinish().Value.Is(5m);
             activity1.LatestStart().Value.Is(0m);
             activity1.LatestFinish().Value.Is(5m);
-            activity1.Float().Value.Is(0m);
+            activity1.TotalFloat().Value.Is(0m);
 
             activity2.EarliestStart().Value.Is(0m);
             activity2.EarliestFinish().Value.Is(2m);
             activity2.LatestStart().Value.Is(3m);
             activity2.LatestFinish().Value.Is(5m);
-            activity2.Float().Value.Is(3m);
+            activity2.TotalFloat().Value.Is(3m);
 
             activity3.EarliestStart().Value.Is(5m);
             activity3.EarliestFinish().Value.Is(8m);
             activity3.LatestStart().Value.Is(5m);
             activity3.LatestFinish().Value.Is(8m);
-            activity3.Float().Value.Is(0m);
+            activity3.TotalFloat().Value.Is(0m);
         }
     }
 }

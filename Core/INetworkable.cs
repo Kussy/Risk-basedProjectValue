@@ -44,9 +44,15 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>最遅完了日を求める</summary>
         /// <returns>最遅完了日</returns>
         LeadTime LatestFinish();
-        /// <summary>フロートを求める</summary>
-        /// <returns>フロート</returns>
-        LeadTime Float();
+        /// <summary>トータルフロートを求める</summary>
+        /// <returns>トータルフロート</returns>
+        LeadTime TotalFloat();
+        /// <summary>フリーフロートを求める</summary>
+        /// <returns>フリーフロート</returns>
+        LeadTime FreeFloat();
+        /// <summary>ディペンデントフロートを求める</summary>
+        /// <returns>ディペンデントフロート</returns>
+        LeadTime DependentFloat();
         /// <summary>DRAGを求める</summary>
         /// <returns>DRAG</returns>
         LeadTime Drag();
