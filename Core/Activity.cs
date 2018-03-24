@@ -323,9 +323,9 @@ namespace Kussy.Analysis.Project.Core
             return Children.Min(a => a.LatestStart());
         }
 
-        /// <summary>フロートを求める</summary>
-        /// <returns>フロート</returns>
-        public LeadTime Float()
+        /// <summary>トータルフロートを求める</summary>
+        /// <returns>トータルフロート</returns>
+        public LeadTime TotalFloat()
         {
             return LatestStart() - EarliestStart();
         }
@@ -335,8 +335,8 @@ namespace Kussy.Analysis.Project.Core
         /// <remarks>
         /// 非クリティカル・パスならば DRAG＝0
         /// クリティカル・パスかつ他に並行作業がないならばDRAG＝所要時間
-        /// クリティカル・パスかつ並行作業があるならばDRAG＝並行作業系列のFloat
-        /// 所要時間＜並行作業のFloatならばDRAG＝所要時間
+        /// クリティカル・パスかつ並行作業があるならばDRAG＝並行作業系列のTotalFloat
+        /// 所要時間＜並行作業のTotalFloatならばDRAG＝所要時間
         /// </remarks>
         public LeadTime Drag()
         {
@@ -353,7 +353,7 @@ namespace Kussy.Analysis.Project.Core
                 var minParallelFloat = Parents
                     .SelectMany(a => a.Children)
                     .Where(a => a != this)
-                    .Min(a => a.Float());
+                    .Min(a => a.TotalFloat());
                 return Duration().Value < minParallelFloat.Value
                     ? Duration()
                     : minParallelFloat;
@@ -372,7 +372,7 @@ namespace Kussy.Analysis.Project.Core
         /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
         public bool IsInCriticalPath()
         {
-            return Float().Value == 0m;
+            return TotalFloat().Value == 0m;
         }
 
         /// <summary>並列アクティビティが存在するかを判定する</summary>
