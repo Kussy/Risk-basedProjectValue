@@ -50,6 +50,9 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>フリーフロートを求める</summary>
         /// <returns>フリーフロート</returns>
         LeadTime FreeFloat();
+        /// <summary>ディペンデントフロートを求める</summary>
+        /// <returns>ディペンデントフロート</returns>
+        LeadTime DependentFloat();
         /// <summary>DRAGを求める</summary>
         /// <returns>DRAG</returns>
         LeadTime Drag();
