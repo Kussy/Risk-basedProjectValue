@@ -16,12 +16,12 @@ namespace Kussy.Analysis.Project.Persistence
         /// <summary>時間単位</summary>
         public TimeType UnitOfTime { get; set; }
         /// <summary>プロジェクト期間</summary>
-        public decimal Term { get; private set; }
+        public decimal Term { get; set; }
         /// <summary>予算</summary>
-        public decimal Budjet { get; private set; }
+        public decimal Budjet { get; set; }
         /// <summary>単位時間辺りの遅延損害金</summary>
         public decimal LiquidatedDamages { get; set; }
         /// <summary>アクティビティ群</summary>
-        public ICollection<Activity> Activities { get; set; }
+        public IEnumerable<Activity> Activities { get; set; }
     }
 }
