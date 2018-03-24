@@ -68,8 +68,8 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasColumnType("decimal(12,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);
-            modelBuilder.Entity<Project>().Property(c => c.Badjet)
-                .HasColumnName("badget")
+            modelBuilder.Entity<Project>().Property(c => c.Budjet)
+                .HasColumnName("budjet")
                 .HasColumnType("decimal(12,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);

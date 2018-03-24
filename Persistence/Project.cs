@@ -18,7 +18,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <summary>プロジェクト期間</summary>
         public decimal Term { get; private set; }
         /// <summary>予算</summary>
-        public decimal Badjet { get; private set; }
+        public decimal Budjet { get; private set; }
         /// <summary>単位時間辺りの遅延損害金</summary>
         public decimal LiquidatedDamages { get; set; }
         /// <summary>アクティビティ群</summary>
