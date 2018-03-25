@@ -126,6 +126,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestActivityController.cs" />
+    <Compile Include="TestAssignController.cs" />
     <Compile Include="TestResourceController.cs" />
     <Compile Include="TestProjectController.cs" />
   </ItemGroup>
