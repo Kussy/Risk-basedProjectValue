@@ -182,7 +182,8 @@ namespace Kussy.Analysis.Project.Persistence
             modelBuilder.Entity<Resource>().Property(c => c.Productivity)
                 .HasColumnName("productivity")
                 .HasColumnType("decimal(12,2)")
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(1m);
             modelBuilder.Entity<Resource>().HasKey(c => new { c.Id });
             modelBuilder.Entity<Resource>().HasIndex(c => new { c.Code }).IsUnique();
             modelBuilder.Entity<Resource>().HasIndex(c => new { c.Type });
