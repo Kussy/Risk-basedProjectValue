@@ -26,7 +26,7 @@ namespace Kussy.Analysis.Project.Persistence
         }
 
         [TestMethod]
-        public void CRUD操作を一通り()
+        public void プロジェクトのCRUD操作を一通り()
         {
             var expectedCode = "code";
             var expectedName = "name";
