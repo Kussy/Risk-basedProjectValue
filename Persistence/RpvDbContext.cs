@@ -19,13 +19,12 @@ namespace Kussy.Analysis.Project.Persistence
         public DbSet<Assign> Assigns { get; set; }
         #endregion
 
-        /// <summary>SQLiteでのDB接続設定</summary>
-        /// <param name="optionsBuilder">オプションビルダー</param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = new SqliteConnectionStringBuilder { DataSource = @".\test.db" }.ToString();
-            optionsBuilder.UseSqlite(new SqliteConnection(connectionString));
-        }
+        /// <summary>コンストラクタ隠蔽</summary>
+        private RpvDbContext() { }
+
+        /// <summary>引数ありコンストラクタ</summary>
+        /// <param name="options">DBコンテキストオプション</param>
+        public RpvDbContext(DbContextOptions<RpvDbContext> options) : base(options) { }
 
         /// <summary>モデル作成</summary>
         /// <param name="modelBuilder">モデルビルダー</param>

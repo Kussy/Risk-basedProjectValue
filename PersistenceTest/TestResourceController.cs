@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
 namespace Kussy.Analysis.Project.Persistence
@@ -6,14 +8,18 @@ namespace Kussy.Analysis.Project.Persistence
     [TestClass]
     public class TestResourceController
     {
+        SqliteConnection Connection { get; set; }
+        DbContextOptions<RpvDbContext> Options { get; set; }
         RpvDbContext DbContext { get; set; }
-
         ResourceController ResourceController { get; set; }
 
         [TestInitialize]
         public void Initialize()
         {
-            DbContext = new RpvDbContext();
+            Connection = new SqliteConnection("DataSource=:memory:");
+            Connection.Open();
+            Options = new DbContextOptionsBuilder<RpvDbContext>().UseSqlite(Connection).Options;
+            DbContext = new RpvDbContext(Options);
             DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
             ResourceController = new ResourceController(DbContext);
