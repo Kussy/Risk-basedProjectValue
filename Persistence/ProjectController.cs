@@ -50,6 +50,7 @@ namespace Kussy.Analysis.Project.Persistence
         public Project Read(int id)
         {
             var project = Context.Projects.Find(id);
+            if (project is null) return project;
             Context.Entry(project).Collection(p => p.Activities).Load();
             foreach (var activity in project.Activities)
             {
