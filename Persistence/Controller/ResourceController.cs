@@ -32,7 +32,6 @@ namespace Kussy.Analysis.Project.Persistence
                 Name = name,
                 Type = type,
                 Productivity = productivity,
-                Assigns = Enumerable.Empty<Assign>(),
             };
             Context.Resources.Add(resource);
             Context.SaveChanges();
