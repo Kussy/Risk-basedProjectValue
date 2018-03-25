@@ -38,7 +38,6 @@ namespace Kussy.Analysis.Project.Persistence
                 Term = term,
                 Budjet = budget,
                 LiquidatedDamages = liquidatedDamages,
-                Activities = Enumerable.Empty<Activity>(),
             };
             Context.Projects.Add(project);
             Context.SaveChanges();
