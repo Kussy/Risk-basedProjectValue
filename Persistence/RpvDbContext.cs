@@ -105,7 +105,7 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasColumnName("state")
                 .HasColumnType("integer")
                 .IsRequired()
-                .HasDefaultValue(State.Unknown);
+                .HasDefaultValue(StateType.Unknown);
             modelBuilder.Entity<Activity>().Property(c => c.Workload)
                 .HasColumnName("workload")
                 .HasColumnType("decimal(12,2)")

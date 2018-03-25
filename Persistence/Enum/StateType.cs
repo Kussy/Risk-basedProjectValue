@@ -1,7 +1,7 @@
 ﻿namespace Kussy.Analysis.Project.Persistence
 {
     /// <summary>進捗状態</summary>
-    public enum State
+    public enum StateType
     {
         /// <summary>未定義</summary>
         Unknown = 0,
