@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Kussy.Analysis.Project.Persistence
@@ -76,6 +77,35 @@ namespace Kussy.Analysis.Project.Persistence
         {
             var findNetwork = Context.Networks.Find(network.AncestorId, network.DescendantId);
             Context.Networks.Remove(findNetwork);
+            Context.SaveChanges();
+        }
+
+        /// <summary>アクティビティの先祖を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>自身を含む先祖全て</returns>
+        public IEnumerable<Network> Ancestors(Activity activity)
+        {
+            return Context.Networks.Where(n => n.Descendant == activity);
+        }
+
+        /// <summary>アクティビティの子孫を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>自身を含む子孫全て</returns>
+        public IEnumerable<Network> Descendants(Activity activity)
+        {
+            return Context.Networks.Where(n => n.Ancestor == activity);
+        }
+
+        /// <summary>親アクティビティと子アクティビティを接続する</summary>
+        /// <param name="parent">親</param>
+        /// <param name="child">子</param>
+        public void Connect(Activity parent, Activity child)
+        {
+            var networks = Descendants(child).SelectMany(
+                d => Ancestors(parent).Select(
+                    a => new Network { Ancestor = a.Ancestor, Descendant = d.Descendant, Depth = a.Depth + d.Depth + 1 }
+                    ));
+            Context.Networks.AddRange(networks);
             Context.SaveChanges();
         }
     }

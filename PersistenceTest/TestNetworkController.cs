@@ -62,5 +62,47 @@ namespace Kussy.Analysis.Project.Persistence
             NetworkController.Delete(changedNetwork);
             NetworkController.Read(activity, activity).IsNull();
         }
+
+        [TestMethod]
+        public void 末端にアクティビティを追加した場合先祖から子孫までの閉包が作成されるべき()
+        {
+            var codeProject = "p";
+            ProjectController.Create(codeProject, codeProject);
+            var project = ProjectController.Read(codeProject);
+
+            var codeA = "a";
+            var codeB = "b";
+            var codeC = "c";
+            var codeD = "d";
+            ActivityController.Create(project, codeA, codeA);
+            ActivityController.Create(project, codeB, codeB);
+            ActivityController.Create(project, codeC, codeC);
+            ActivityController.Create(project, codeD, codeD);
+            var activityA = ActivityController.Read(codeA);
+            var activityB = ActivityController.Read(codeB);
+            var activityC = ActivityController.Read(codeC);
+            var activityD = ActivityController.Read(codeD);
+
+            NetworkController.Create(activityA, activityA, 0);
+            NetworkController.Create(activityA, activityB, 1);
+            NetworkController.Create(activityB, activityB, 0);
+
+            NetworkController.Create(activityC, activityC, 0);
+            NetworkController.Create(activityC, activityD, 1);
+            NetworkController.Create(activityD, activityD, 0);
+
+            NetworkController.Connect(activityB, activityC);
+
+            NetworkController.Read(activityA, activityA).Depth.Is(0);
+            NetworkController.Read(activityA, activityB).Depth.Is(1);
+            NetworkController.Read(activityA, activityC).Depth.Is(2);
+            NetworkController.Read(activityA, activityD).Depth.Is(3);
+            NetworkController.Read(activityB, activityB).Depth.Is(0);
+            NetworkController.Read(activityB, activityC).Depth.Is(1);
+            NetworkController.Read(activityB, activityD).Depth.Is(2);
+            NetworkController.Read(activityC, activityC).Depth.Is(0);
+            NetworkController.Read(activityC, activityD).Depth.Is(1);
+            NetworkController.Read(activityD, activityD).Depth.Is(0);
+        }
     }
 }
