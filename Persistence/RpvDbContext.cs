@@ -19,13 +19,12 @@ namespace Kussy.Analysis.Project.Persistence
         public DbSet<Assign> Assigns { get; set; }
         #endregion
 
-        /// <summary>SQLiteでのDB接続設定</summary>
-        /// <param name="optionsBuilder">オプションビルダー</param>
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = new SqliteConnectionStringBuilder { DataSource = @".\test.db" }.ToString();
-            optionsBuilder.UseSqlite(new SqliteConnection(connectionString));
-        }
+        /// <summary>コンストラクタ隠蔽</summary>
+        private RpvDbContext() { }
+
+        /// <summary>引数ありコンストラクタ</summary>
+        /// <param name="options">DBコンテキストオプション</param>
+        public RpvDbContext(DbContextOptions<RpvDbContext> options) : base(options) { }
 
         /// <summary>モデル作成</summary>
         /// <param name="modelBuilder">モデルビルダー</param>
@@ -68,8 +67,8 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasColumnType("decimal(12,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);
-            modelBuilder.Entity<Project>().Property(c => c.Badjet)
-                .HasColumnName("badget")
+            modelBuilder.Entity<Project>().Property(c => c.Budjet)
+                .HasColumnName("budjet")
                 .HasColumnType("decimal(12,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);
@@ -105,7 +104,7 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasColumnName("state")
                 .HasColumnType("integer")
                 .IsRequired()
-                .HasDefaultValue(State.Unknown);
+                .HasDefaultValue(StateType.Unknown);
             modelBuilder.Entity<Activity>().Property(c => c.Workload)
                 .HasColumnName("workload")
                 .HasColumnType("decimal(12,2)")
@@ -182,7 +181,8 @@ namespace Kussy.Analysis.Project.Persistence
             modelBuilder.Entity<Resource>().Property(c => c.Productivity)
                 .HasColumnName("productivity")
                 .HasColumnType("decimal(12,2)")
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(1m);
             modelBuilder.Entity<Resource>().HasKey(c => new { c.Id });
             modelBuilder.Entity<Resource>().HasIndex(c => new { c.Code }).IsUnique();
             modelBuilder.Entity<Resource>().HasIndex(c => new { c.Type });

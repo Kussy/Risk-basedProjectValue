@@ -16,7 +16,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <summary>プロジェクト</summary>
         public Project Project { get; set; }
         /// <summary>状態</summary>
-        public State State { get; set; }
+        public StateType State { get; set; }
         /// <summary>作業量</summary>
         public decimal Workload { get; set; }
         /// <summary>固定リードタイム</summary>
