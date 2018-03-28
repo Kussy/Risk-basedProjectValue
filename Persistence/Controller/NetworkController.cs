@@ -101,10 +101,9 @@ namespace Kussy.Analysis.Project.Persistence
         /// <param name="child">子</param>
         public void Connect(Activity parent, Activity child)
         {
-            var networks = Descendants(child).SelectMany(
-                d => Ancestors(parent).Select(
-                    a => new Network { Ancestor = a.Ancestor, Descendant = d.Descendant, Depth = a.Depth + d.Depth + 1 }
-                    ));
+            Network ancestorsDescendants(Network a, Network d)
+                => new Network { Ancestor = a.Ancestor, Descendant = d.Descendant, Depth = a.Depth + d.Depth + 1, };
+            var networks = Descendants(child).SelectMany(d => Ancestors(parent).Select(a => ancestorsDescendants(a, d)));
             Context.Networks.AddRange(networks);
             Context.SaveChanges();
         }
