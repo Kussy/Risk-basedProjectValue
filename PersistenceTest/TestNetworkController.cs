@@ -121,5 +121,42 @@ namespace Kussy.Analysis.Project.Persistence
             NetworkController.Read(activityC, activityD).Depth.Is(1);
             NetworkController.Read(activityD, activityD).Depth.Is(0);
         }
+
+        [TestMethod]
+        public void アクティビティの親子を取得できるべき()
+        {
+            var codeProject = "p";
+            ProjectController.Create(codeProject, codeProject);
+            var project = ProjectController.Read(codeProject);
+
+            var codeA = "a";
+            var codeB = "b";
+            var codeC = "c";
+            var codeD = "d";
+            var codeE = "e";
+            ActivityController.Create(project, codeA, codeA);
+            ActivityController.Create(project, codeB, codeB);
+            ActivityController.Create(project, codeC, codeC);
+            ActivityController.Create(project, codeD, codeD);
+            ActivityController.Create(project, codeE, codeE);
+            var activityA = ActivityController.Read(codeA);
+            var activityB = ActivityController.Read(codeB);
+            var activityC = ActivityController.Read(codeC);
+            var activityD = ActivityController.Read(codeD);
+            var activityE = ActivityController.Read(codeE);
+
+            NetworkController.Connect(activityA, activityB);
+            NetworkController.Connect(activityB, activityC);
+            NetworkController.Connect(activityB, activityD);
+            NetworkController.Connect(activityC, activityE);
+            NetworkController.Connect(activityD, activityE);
+
+            NetworkController.Parents(activityE).Count().Is(2);
+            NetworkController.Parents(activityE).Select(a => a.Code).Contains(codeC).Is(true);
+            NetworkController.Parents(activityE).Select(a => a.Code).Contains(codeD).Is(true);
+            NetworkController.Children(activityB).Count().Is(2);
+            NetworkController.Children(activityB).Select(a => a.Code).Contains(codeC).Is(true);
+            NetworkController.Children(activityB).Select(a => a.Code).Contains(codeD).Is(true);
+        }
     }
 }

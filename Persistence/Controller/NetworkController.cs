@@ -46,6 +46,32 @@ namespace Kussy.Analysis.Project.Persistence
             return network;
         }
 
+        /// <summary>先行アクティビティ群を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>先行アクティビティ群</returns>
+        public IEnumerable<Activity> Parents(Activity activity)
+        {
+            return Context.Networks
+                .Where(n => n.DescendantId == activity.Id)
+                .Where(n => n.Depth == 1)
+                .Distinct()
+                .Select(n => n.Ancestor)
+                .ToList();
+        }
+
+        /// <summary>後続アクティビティ群を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>後続アクティビティ群</returns>
+        public IEnumerable<Activity> Children(Activity activity)
+        {
+            return Context.Networks
+                .Where(n => n.AncestorId == activity.Id)
+                .Where(n => n.Depth == 1)
+                .Distinct()
+                .Select(n => n.Descendant)
+                .ToList();
+        }
+
         /// <summary>アクティビティの先祖を取得する</summary>
         /// <param name="activity">アクティビティ</param>
         /// <returns>自身を含む先祖全て</returns>
@@ -68,9 +94,16 @@ namespace Kussy.Analysis.Project.Persistence
         public void Connect(Activity parent, Activity child)
         {
             Network ancestorsDescendants(Network a, Network d)
-                => new Network { Ancestor = a.Ancestor, Descendant = d.Descendant, Depth = a.Depth + d.Depth + 1, };
+                => new Network { AncestorId = a.AncestorId, DescendantId = d.DescendantId, Depth = a.Depth + d.Depth + 1, };
             var networks = Descendants(child).SelectMany(d => Ancestors(parent).Select(a => ancestorsDescendants(a, d)));
-            Context.Networks.AddRange(networks);
+            var unique = new List<Network>();
+
+            foreach (var n in networks)
+            {
+                var target = Context.Networks.Find(n.AncestorId, n.DescendantId);
+                if (target is null) unique.Add(n);
+            }
+            Context.Networks.AddRange(unique);
             Context.SaveChanges();
         }
 
