@@ -104,5 +104,41 @@ namespace Kussy.Analysis.Project.Persistence
             NetworkController.Read(activityC, activityD).Depth.Is(1);
             NetworkController.Read(activityD, activityD).Depth.Is(0);
         }
+
+        [TestMethod]
+        public void MyTestMethod()
+        {
+            var codeProject = "p";
+            ProjectController.Create(codeProject, codeProject);
+            var project = ProjectController.Read(codeProject);
+
+            var codeA = "a";
+            var codeB = "b";
+            var codeC = "c";
+            var codeD = "d";
+            ActivityController.Create(project, codeA, codeA);
+            ActivityController.Create(project, codeB, codeB);
+            ActivityController.Create(project, codeC, codeC);
+            ActivityController.Create(project, codeD, codeD);
+            var activityA = ActivityController.Read(codeA);
+            var activityB = ActivityController.Read(codeB);
+            var activityC = ActivityController.Read(codeC);
+            var activityD = ActivityController.Read(codeD);
+
+            NetworkController.Create(activityA, activityA, 0);
+            NetworkController.Create(activityA, activityB, 1);
+            NetworkController.Create(activityA, activityC, 2);
+            NetworkController.Create(activityA, activityD, 3);
+            NetworkController.Create(activityB, activityB, 0);
+            NetworkController.Create(activityB, activityC, 1);
+            NetworkController.Create(activityB, activityD, 2);
+            NetworkController.Create(activityC, activityC, 0);
+            NetworkController.Create(activityC, activityD, 1);
+            NetworkController.Create(activityD, activityD, 0);
+
+            NetworkController.Disconnect(activityC);
+
+            var networks = NetworkController.Context.Networks.ToList();
+        }
     }
 }

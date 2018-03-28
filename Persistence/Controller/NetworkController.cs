@@ -107,5 +107,17 @@ namespace Kussy.Analysis.Project.Persistence
             Context.Networks.AddRange(networks);
             Context.SaveChanges();
         }
+
+        /// <summary>ネットワークから該当アクティビティとその子孫を切り離す</summary>
+        /// <param name="activity">切断対象のアクティビティ</param>
+        public void Disconnect(Activity activity)
+        {
+            var removeTargets = Context.Networks
+                .Where(n => Ancestors(activity).Select(a => a.AncestorId).Contains(n.AncestorId))
+                .Where(n => Descendants(activity).Select(d => d.DescendantId).Contains(n.DescendantId))
+                .Where(n => n.AncestorId != activity.Id);
+            Context.Networks.RemoveRange(removeTargets);
+            Context.SaveChanges();
+        }
     }
 }
