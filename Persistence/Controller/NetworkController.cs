@@ -20,22 +20,6 @@ namespace Kussy.Analysis.Project.Persistence
             Context = context;
         }
 
-        /// <summary>ネットワークの作成</summary>
-        /// <param name="ancestor">先祖</param>
-        /// <param name="descendant">子孫</param>
-        /// <param name="depth">深さ</param>
-        public void Create(Activity ancestor, Activity descendant, int depth)
-        {
-            var network = new Network
-            {
-                Ancestor = ancestor,
-                Descendant = descendant,
-                Depth = depth,
-            };
-            Context.Networks.Add(network);
-            Context.SaveChanges();
-        }
-
         /// <summary>ネットワークの取得</summary>
         /// <param name="ancestor">先祖</param>
         /// <param name="descendant">子孫</param>
@@ -60,24 +44,6 @@ namespace Kussy.Analysis.Project.Persistence
             }
 
             return network;
-        }
-
-        /// <summary>ネットワークの更新</summary>
-        /// <param name="network">ネットワーク</param>
-        public void Update(Network network)
-        {
-            var findNetwork = Context.Networks.Find(network.AncestorId, network.DescendantId);
-            findNetwork.Depth = network.Depth;
-            Context.SaveChanges();
-        }
-
-        /// <summary>ネットワークの削除の削除</summary>
-        /// <param name="network">ネットワーク</param>
-        public void Delete(Network network)
-        {
-            var findNetwork = Context.Networks.Find(network.AncestorId, network.DescendantId);
-            Context.Networks.Remove(findNetwork);
-            Context.SaveChanges();
         }
 
         /// <summary>アクティビティの先祖を取得する</summary>

@@ -36,7 +36,7 @@ namespace Kussy.Analysis.Project.Persistence
         }
 
         [TestMethod]
-        public void ネットワークのCRUD操作を一通り()
+        public void アクティビティの作成時に自分自身のネットワークが作成されているべき()
         {
             var code = "ancestor";
             var name = "ancestor";
@@ -50,16 +50,6 @@ namespace Kussy.Analysis.Project.Persistence
             selfNetwork.AncestorId.Is(activity.Id);
             selfNetwork.DescendantId.Is(activity.Id);
             selfNetwork.Depth.Is(expectedDepth);
-
-            var changedDepth = 1;
-            selfNetwork.Depth = changedDepth;
-            NetworkController.Update(selfNetwork);
-
-            var changedNetwork = NetworkController.Read(activity, activity);
-            changedNetwork.Depth.Is(changedDepth);
-
-            NetworkController.Delete(changedNetwork);
-            NetworkController.Read(activity, activity).IsNull();
         }
 
         [TestMethod]
