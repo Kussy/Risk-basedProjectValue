@@ -46,7 +46,6 @@ namespace Kussy.Analysis.Project.Persistence
             ActivityController.Create(project, code, name);
             var activity = ActivityController.Read(code);
  
-            NetworkController.Create(activity, activity, expectedDepth);
             var selfNetwork = NetworkController.Read(activity, activity);
             selfNetwork.AncestorId.Is(activity.Id);
             selfNetwork.DescendantId.Is(activity.Id);
@@ -83,15 +82,9 @@ namespace Kussy.Analysis.Project.Persistence
             var activityC = ActivityController.Read(codeC);
             var activityD = ActivityController.Read(codeD);
 
-            NetworkController.Create(activityA, activityA, 0);
-            NetworkController.Create(activityA, activityB, 1);
-            NetworkController.Create(activityB, activityB, 0);
-
-            NetworkController.Create(activityC, activityC, 0);
-            NetworkController.Create(activityC, activityD, 1);
-            NetworkController.Create(activityD, activityD, 0);
-
+            NetworkController.Connect(activityA, activityB);
             NetworkController.Connect(activityB, activityC);
+            NetworkController.Connect(activityC, activityD);
 
             NetworkController.Read(activityA, activityA).Depth.Is(0);
             NetworkController.Read(activityA, activityB).Depth.Is(1);
@@ -106,7 +99,7 @@ namespace Kussy.Analysis.Project.Persistence
         }
 
         [TestMethod]
-        public void MyTestMethod()
+        public void 途中のアクティビティを切断した場合その子孫までで独立したネットワークが残るべき()
         {
             var codeProject = "p";
             ProjectController.Create(codeProject, codeProject);
@@ -125,20 +118,18 @@ namespace Kussy.Analysis.Project.Persistence
             var activityC = ActivityController.Read(codeC);
             var activityD = ActivityController.Read(codeD);
 
-            NetworkController.Create(activityA, activityA, 0);
-            NetworkController.Create(activityA, activityB, 1);
-            NetworkController.Create(activityA, activityC, 2);
-            NetworkController.Create(activityA, activityD, 3);
-            NetworkController.Create(activityB, activityB, 0);
-            NetworkController.Create(activityB, activityC, 1);
-            NetworkController.Create(activityB, activityD, 2);
-            NetworkController.Create(activityC, activityC, 0);
-            NetworkController.Create(activityC, activityD, 1);
-            NetworkController.Create(activityD, activityD, 0);
+            NetworkController.Connect(activityA, activityB);
+            NetworkController.Connect(activityB, activityC);
+            NetworkController.Connect(activityC, activityD);
 
             NetworkController.Disconnect(activityC);
 
-            var networks = NetworkController.Context.Networks.ToList();
+            NetworkController.Read(activityA, activityA).Depth.Is(0);
+            NetworkController.Read(activityA, activityB).Depth.Is(1);
+            NetworkController.Read(activityB, activityB).Depth.Is(0);
+            NetworkController.Read(activityC, activityC).Depth.Is(0);
+            NetworkController.Read(activityC, activityD).Depth.Is(1);
+            NetworkController.Read(activityD, activityD).Depth.Is(0);
         }
     }
 }

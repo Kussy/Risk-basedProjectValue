@@ -43,7 +43,14 @@ namespace Kussy.Analysis.Project.Persistence
                 Workload = workload,
                 RateOfFailure = rateOfFailure,
             };
+            var network = new Network
+            {
+                Ancestor = activity,
+                Descendant = activity,
+                Depth = 0,
+            };
             Context.Activities.Add(activity);
+            Context.Networks.Add(network);
             Context.SaveChanges();
         }
 
