@@ -85,7 +85,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <returns>自身を含む先祖全て</returns>
         public IEnumerable<Network> Ancestors(Activity activity)
         {
-            return Context.Networks.Where(n => n.Descendant == activity);
+            return Context.Networks.Where(n => n.Descendant == activity).ToList();
         }
 
         /// <summary>アクティビティの子孫を取得する</summary>
@@ -93,7 +93,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <returns>自身を含む子孫全て</returns>
         public IEnumerable<Network> Descendants(Activity activity)
         {
-            return Context.Networks.Where(n => n.Ancestor == activity);
+            return Context.Networks.Where(n => n.Ancestor == activity).ToList();
         }
 
         /// <summary>親アクティビティと子アクティビティを接続する</summary>
