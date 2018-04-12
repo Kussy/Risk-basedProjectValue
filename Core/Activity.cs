@@ -347,31 +347,22 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>DRAGを求める</summary>
         /// <returns>DRAG</returns>
         /// <remarks>
-        /// 非クリティカル・パスならば DRAG＝0
-        /// クリティカル・パスかつ他に並行作業がないならばDRAG＝所要時間
-        /// クリティカル・パスかつ並行作業があるならばDRAG＝並行作業系列のTotalFloat
-        /// 所要時間＜並行作業のTotalFloatならばDRAG＝所要時間
+        /// アクティビティの所要時間をゼロにした場合の完了時間の変化
+        /// 非クリティカル・パスの場合はゼロ
+        /// クリティカル・パスの場合は並列アクティビティの有無で変化する
         /// </remarks>
         public LeadTime Drag()
         {
-            if (!IsInCriticalPath())
-            {
-                return LeadTime.Of();
-            }
-            else if (!ExistsParallelActivity())
-            {
-                return Duration();
-            }
-            else
-            {
-                var minParallelFloat = Parents
-                    .SelectMany(a => a.Children)
-                    .Where(a => a != this)
-                    .Min(a => a.TotalFloat());
-                return Duration().Value < minParallelFloat.Value
-                    ? Duration()
-                    : minParallelFloat;
-            }
+            var originalEndTime = Descendants.Where(d => d.Children.IsEmpty()).First().EarliestFinish().Value;
+            var originalFixTime = FixTime;
+            var originalWorkload = WorkLoad;
+            Estimate(LeadTime.Of());
+            Estimate(WorkLoad.Of());
+            var shortenedEndTime = Descendants.Where(d => d.Children.IsEmpty()).First().EarliestFinish().Value;
+            var drag = originalEndTime - shortenedEndTime;
+            Estimate(originalFixTime);
+            Estimate(originalWorkload);
+            return LeadTime.Of(drag);
         }
 
         /// <summary>DRAGコストを求める</summary>
@@ -387,14 +378,6 @@ namespace Kussy.Analysis.Project.Core
         public bool IsInCriticalPath()
         {
             return TotalFloat().Value == 0m;
-        }
-
-        /// <summary>並列アクティビティが存在するかを判定する</summary>
-        /// <returns>true:並列あり/false:並列なし</returns>
-        public bool ExistsParallelActivity()
-        {
-            if (Parents.IsEmpty()) return false;
-            return Parents.SelectMany(a => a.Children).Distinct().Count() > 1;
         }
 
         /// <summary>本質的コストを求める</summary>
