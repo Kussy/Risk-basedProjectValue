@@ -63,8 +63,5 @@ namespace Kussy.Analysis.Project.Core
         /// <summary>クリティカル・パスに乗っているかを判定する</summary>
         /// <returns>true:クリティカル・パス/false:非クリティカル・パス</returns>
         bool IsInCriticalPath();
-        /// <summary>並列アクティビティが存在するかを判定する</summary>
-        /// <returns>true:並列あり/false:並列なし</returns>
-        bool ExistsParallelActivity();
     }
 }
