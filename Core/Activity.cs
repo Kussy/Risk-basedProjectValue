@@ -353,6 +353,7 @@ namespace Kussy.Analysis.Project.Core
         /// </remarks>
         public LeadTime Drag()
         {
+            if (Children.IsNullOrEmpty()) return Duration();
             var originalEndTime = Descendants.Where(d => d.Children.IsEmpty()).First().EarliestFinish().Value;
             var originalFixTime = FixTime;
             var originalWorkload = WorkLoad;
