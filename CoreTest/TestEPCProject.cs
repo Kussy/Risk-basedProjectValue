@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Kussy.Analysis.Project.Core
@@ -307,9 +308,9 @@ namespace Kussy.Analysis.Project.Core
             var a_16CS03 = project.Activities.First(a => a.Id == "16CS03");
             var a_17CS01 = project.Activities.First(a => a.Id == "17CS01");
             var a_12CM01 = project.Activities.First(a => a.Id == "12CM01");
-
-            var routes = project.Routes();
             #endregion
+
+            #region Act Assert
             project.RoutesVia(a_12BD01).Count().Is(21);
             project.RoutesVia(a_01CS01).Count().Is(3);
             project.RoutesVia(a_15DE01).Count().Is(9);
@@ -336,6 +337,34 @@ namespace Kussy.Analysis.Project.Core
             project.RoutesVia(a_16CS03).Count().Is(15);
             project.RoutesVia(a_17CS01).Count().Is(9);
             project.RoutesVia(a_12CM01).Count().Is(24);
+
+            project.TotalDragVia(a_12BD01).Value.Is(143.5m);
+            project.TotalDragVia(a_01CS01).Value.Is(19.0m);
+            project.TotalDragVia(a_15DE01).Value.Is(61.5m);
+            project.TotalDragVia(a_17DE01).Value.Is(27.0m);
+            project.TotalDragVia(a_12BD02).Value.Is(20.5m);
+            project.TotalDragVia(a_16BD01).Value.Is(34.5m);
+            project.TotalDragVia(a_14DE01).Value.Is(34.5m);
+            project.TotalDragVia(a_15DE02).Value.Is(27.0m);
+            project.TotalDragVia(a_17DE02).Value.Is(27.0m);
+            project.TotalDragVia(a_16PR01).Value.Is(14.0m);
+            project.TotalDragVia(a_16DE01).Value.Is(82.0m);
+            project.TotalDragVia(a_15PR01).Value.Is(6.5m);
+            project.TotalDragVia(a_14PR01).Value.Is(14.0m);
+            project.TotalDragVia(a_16DE02).Value.Is(82.0m);
+            project.TotalDragVia(a_13DE01).Value.Is(20.5m);
+            project.TotalDragVia(a_16DE03).Value.Is(56.0m);
+            project.TotalDragVia(a_13CS01).Value.Is(39.5m);
+            project.TotalDragVia(a_17PR01).Value.Is(6.5m);
+            project.TotalDragVia(a_13CS02).Value.Is(12.5m);
+            project.TotalDragVia(a_14CS01).Value.Is(41.0m);
+            project.TotalDragVia(a_16CS01).Value.Is(70.0m);
+            project.TotalDragVia(a_16CS02).Value.Is(111.0m);
+            project.TotalDragVia(a_15CS01).Value.Is(45.0m);
+            project.TotalDragVia(a_16CS03).Value.Is(100.5m);
+            project.TotalDragVia(a_17CS01).Value.Is(62.0m);
+            project.TotalDragVia(a_12CM01).Value.Is(162.5m);
+            #endregion
         }
 
         private static Project Create()
