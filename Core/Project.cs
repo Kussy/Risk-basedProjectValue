@@ -147,5 +147,13 @@ namespace Kussy.Analysis.Project.Core
             }
             return Routes(new HashSet<List<INetworkable>>(), new List<INetworkable>(), Start);
         }
+
+        /// <summary>特定経路のDRAG合計を取得する</summary>
+        /// <param name="route">経路</param>
+        /// <returns>DRAG合計</returns>
+        public LeadTime TotalDragIn(IReadOnlyList<INetworkable> route)
+        {
+            return route.Select(n => n.Drag()).Sum();
+        }
     }
 }
