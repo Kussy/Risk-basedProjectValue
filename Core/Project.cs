@@ -155,5 +155,13 @@ namespace Kussy.Analysis.Project.Core
         {
             return route.Select(n => n.Drag()).Sum();
         }
+
+        /// <summary>指定したアクティビティを含む経路群を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>経路群</returns>
+        public IEnumerable<IReadOnlyList<INetworkable>> RoutesVia(Activity activity)
+        {
+            return Routes().Where(r => r.Contains(activity));
+        }
     }
 }
