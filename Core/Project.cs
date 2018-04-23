@@ -34,13 +34,17 @@ namespace Kussy.Analysis.Project.Core
 
 
         /// <summary>静的ファクトリーメソッド</summary>
+        /// <param name="code">コード</param>
+        /// <param name="name">名称</param>
         /// <param name="unitOfCurrency">通貨単位</param>
         /// <param name="unitOfTime">時間単位</param>
         /// <param name="term">プロジェクト期間</param>
-        /// <param name="badjet"></param>
-        /// <param name="liquidatedDamages"></param>
+        /// <param name="badjet">予算</param>
+        /// <param name="liquidatedDamages">遅延損害金</param>
         /// <returns></returns>
         public static Project Define(
+            string code = "",
+            string name = "",
             Currency unitOfCurrency = Currency.JPY,
             TimeType unitOfTime = TimeType.Day,
             decimal term = 0m,
@@ -50,6 +54,8 @@ namespace Kussy.Analysis.Project.Core
         {
             var project = new Project()
             {
+                Code = code,
+                Name = name,
                 UnitOfCurrency = unitOfCurrency,
                 UnitOfTime = unitOfTime,
                 Term = LeadTime.Of(term),
