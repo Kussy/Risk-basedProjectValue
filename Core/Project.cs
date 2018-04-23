@@ -155,13 +155,5 @@ namespace Kussy.Analysis.Project.Core
         {
             return Routes().Where(r => r.Contains(activity));
         }
-
-        /// <summary>指定したアクティビティを含む経路群のDRAG和を取得する</summary>
-        /// <param name="activity">アクティビティ</param>
-        /// <returns>DRAG和</returns>
-        public LeadTime TotalDragVia(Activity activity)
-        {
-            return RoutesVia(activity).Select(r => r.Select(a => a.Drag()).Sum()).Sum();
-        }
     }
 }
