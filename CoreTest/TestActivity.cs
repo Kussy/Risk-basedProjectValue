@@ -125,8 +125,8 @@ namespace Kussy.Analysis.Project.Core
         public void アクティビティの資源割当は追加的であるべき()
         {
             var activity = Activity.Define();
-            var resource1 = Resource.Of(1m, 1m);
-            var resource2 = Resource.Of(2m, 2m);
+            var resource1 = Resource.Of(quantity: 1m, productivity: 1m);
+            var resource2 = Resource.Of(quantity: 2m, productivity: 2m);
             activity.Assign(resource1);
             activity.Resources.Count().Is(1);
             activity.Assign(resource2);
@@ -137,7 +137,7 @@ namespace Kussy.Analysis.Project.Core
         public void アクティビティの資源割当解除を行うと初期状態に戻るべき()
         {
             var activity = Activity.Define();
-            var resource = Resource.Of(1m, 1m);
+            var resource = Resource.Of(quantity: 1m, productivity: 1m);
             activity.Assign(resource);
             activity.UnAssign();
             activity.Resources.IsNotNull();

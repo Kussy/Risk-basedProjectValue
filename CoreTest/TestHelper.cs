@@ -29,7 +29,7 @@ namespace Kussy.Analysis.Project.Core
             activity.Estimate(WorkLoad.Of(workLoad));
             if (resourceQuantity != 0m && resourceProductivity != 0m)
             {
-                activity.Assign(new[] { Resource.Of(resourceQuantity, resourceProductivity) });
+                activity.Assign(new[] { Resource.Of(quantity: resourceQuantity, productivity: resourceProductivity) });
             }
             activity.Progress(state);
             return activity;
