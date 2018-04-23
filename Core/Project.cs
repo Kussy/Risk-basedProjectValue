@@ -73,7 +73,7 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="activities">アクティビティ群</param>
         public void Add(IEnumerable<Activity> activities)
         {
-            Contract.Requires(!activities.All(a => Activities.Contains(a, b => b.Id)));
+            Contract.Requires(!activities.All(a => Activities.Contains(a, b => b.Code)));
             Start.Precede(activities.Where(a => a.Parents.IsEmpty()));
             End.Succeed(activities.Where(a => a.Children.IsEmpty()));
             Activities = Activities.Union(activities);

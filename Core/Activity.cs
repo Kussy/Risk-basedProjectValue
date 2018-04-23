@@ -13,10 +13,10 @@ namespace Kussy.Analysis.Project.Core
         , INetworkable
         , IEvaluable
     {
-        /// <summary>GUID</summary>
+        /// <summary>ID</summary>
         public Guid Guid { get; } = Guid.NewGuid();
-        /// <summary>ユーザー定義ID</summary>
-        public string Id { get; private set; } = string.Empty;
+        /// <summary>コード</summary>
+        public string Code { get; private set; } = string.Empty;
         /// <summary>名称</summary>
         public string Name { get; private set; } = string.Empty;
         /// <summary>進捗状態</summary>
@@ -65,7 +65,7 @@ namespace Kussy.Analysis.Project.Core
         }
 
         /// <summary>アクティビティを定義する</summary>
-        /// <param name="id">ID</param>
+        /// <param name="code">コード</param>
         /// <param name="name">名称</param>
         /// <param name="externalCost">支出</param>
         /// <param name="income">収入</param>
@@ -76,7 +76,7 @@ namespace Kussy.Analysis.Project.Core
         /// <param name="costOverRate">コスト超過確率</param>
         /// <returns></returns>
         public static Activity Define(
-            string id = null,
+            string code = null,
             string name = null,
             decimal externalCost = 0m,
             decimal income = 0m,
@@ -86,12 +86,12 @@ namespace Kussy.Analysis.Project.Core
             decimal reworkRate = 0m,
             decimal costOverRate = 0m)
         {
-            Contract.Requires(!id.IsNullOrEmpty());
+            Contract.Requires(!code.IsNullOrEmpty());
             Contract.Requires(!name.IsNullOrEmpty());
 
             var activity = new Activity()
             {
-                Id = id,
+                Code = code,
                 Name = name,
             };
             activity.Estimate(Cost.Of(externalCost));
