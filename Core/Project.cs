@@ -127,5 +127,33 @@ namespace Kussy.Analysis.Project.Core
                 .Sum();
             return accumulatedCF + futureCF;
         }
+
+        /// <summary>プロジェクト内の全経路を取得する</summary>
+        /// <returns>全経路</returns>
+        public IEnumerable<IReadOnlyList<INetworkable>> Routes()
+        {
+            HashSet<List<INetworkable>> Routes(HashSet<List<INetworkable>> allRoutes, List<INetworkable> currentRoute, INetworkable currentNode)
+            {
+                currentRoute.Add(currentNode);
+                if (currentNode.Children.IsNullOrEmpty()) return allRoutes;
+                foreach (var child in currentNode.Children)
+                {
+                    var copyRoute = new List<INetworkable>(currentRoute);
+                    allRoutes.Remove(currentRoute);
+                    allRoutes.Add(copyRoute);
+                    Routes(allRoutes, copyRoute, child);
+                }
+                return allRoutes;
+            }
+            return Routes(new HashSet<List<INetworkable>>(), new List<INetworkable>(), Start);
+        }
+
+        /// <summary>指定したアクティビティを含む経路群を取得する</summary>
+        /// <param name="activity">アクティビティ</param>
+        /// <returns>経路群</returns>
+        public IEnumerable<IReadOnlyList<INetworkable>> RoutesVia(Activity activity)
+        {
+            return Routes().Where(r => r.Contains(activity));
+        }
     }
 }

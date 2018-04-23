@@ -88,5 +88,18 @@ namespace Kussy.Analysis.Project.Core
             }
             return sum;
         }
+
+        /// <summary>LeadTime型用の集計関数</summary>
+        /// <param name="source">対象</param>
+        /// <returns>集計結果</returns>
+        public static LeadTime Sum(this IEnumerable<LeadTime> source)
+        {
+            var sum = LeadTime.Of();
+            foreach (var item in source)
+            {
+                sum += item;
+            }
+            return sum;
+        }
     }
 }

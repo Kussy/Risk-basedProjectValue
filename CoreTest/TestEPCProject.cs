@@ -6,40 +6,70 @@ namespace Kussy.Analysis.Project.Core
     [TestClass]
     public class TestEPCProject
     {
+        Project project;
+        Activity a_12BD01;
+        Activity a_01CS01;
+        Activity a_15DE01;
+        Activity a_17DE01;
+        Activity a_12BD02;
+        Activity a_16BD01;
+        Activity a_14DE01;
+        Activity a_15DE02;
+        Activity a_17DE02;
+        Activity a_16PR01;
+        Activity a_16DE01;
+        Activity a_15PR01;
+        Activity a_14PR01;
+        Activity a_16DE02;
+        Activity a_13DE01;
+        Activity a_16DE03;
+        Activity a_13CS01;
+        Activity a_17PR01;
+        Activity a_13CS02;
+        Activity a_14CS01;
+        Activity a_16CS01;
+        Activity a_16CS02;
+        Activity a_15CS01;
+        Activity a_16CS03;
+        Activity a_17CS01;
+        Activity a_12CM01;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            project = Create();
+            a_12BD01 = project.Activities.First(a => a.Id == "12BD01");
+            a_01CS01 = project.Activities.First(a => a.Id == "01CS01");
+            a_15DE01 = project.Activities.First(a => a.Id == "15DE01");
+            a_17DE01 = project.Activities.First(a => a.Id == "17DE01");
+            a_12BD02 = project.Activities.First(a => a.Id == "12BD02");
+            a_16BD01 = project.Activities.First(a => a.Id == "16BD01");
+            a_14DE01 = project.Activities.First(a => a.Id == "14DE01");
+            a_15DE02 = project.Activities.First(a => a.Id == "15DE02");
+            a_17DE02 = project.Activities.First(a => a.Id == "17DE02");
+            a_16PR01 = project.Activities.First(a => a.Id == "16PR01");
+            a_16DE01 = project.Activities.First(a => a.Id == "16DE01");
+            a_15PR01 = project.Activities.First(a => a.Id == "15PR01");
+            a_14PR01 = project.Activities.First(a => a.Id == "14PR01");
+            a_16DE02 = project.Activities.First(a => a.Id == "16DE02");
+            a_13DE01 = project.Activities.First(a => a.Id == "13DE01");
+            a_16DE03 = project.Activities.First(a => a.Id == "16DE03");
+            a_13CS01 = project.Activities.First(a => a.Id == "13CS01");
+            a_17PR01 = project.Activities.First(a => a.Id == "17PR01");
+            a_13CS02 = project.Activities.First(a => a.Id == "13CS02");
+            a_14CS01 = project.Activities.First(a => a.Id == "14CS01");
+            a_16CS01 = project.Activities.First(a => a.Id == "16CS01");
+            a_16CS02 = project.Activities.First(a => a.Id == "16CS02");
+            a_15CS01 = project.Activities.First(a => a.Id == "15CS01");
+            a_16CS03 = project.Activities.First(a => a.Id == "16CS03");
+            a_17CS01 = project.Activities.First(a => a.Id == "17CS01");
+            a_12CM01 = project.Activities.First(a => a.Id == "12CM01");
+        }
+
+
         [TestMethod]
         public void EPCプロジェクトのCPMの結果が手動で計算した値と一致するべき()
         {
-            #region Arrange
-            var project = Create();
-            var a_12BD01 = project.Activities.First(a => a.Id == "12BD01");
-            var a_01CS01 = project.Activities.First(a => a.Id == "01CS01");
-            var a_15DE01 = project.Activities.First(a => a.Id == "15DE01");
-            var a_17DE01 = project.Activities.First(a => a.Id == "17DE01");
-            var a_12BD02 = project.Activities.First(a => a.Id == "12BD02");
-            var a_16BD01 = project.Activities.First(a => a.Id == "16BD01");
-            var a_14DE01 = project.Activities.First(a => a.Id == "14DE01");
-            var a_15DE02 = project.Activities.First(a => a.Id == "15DE02");
-            var a_17DE02 = project.Activities.First(a => a.Id == "17DE02");
-            var a_16PR01 = project.Activities.First(a => a.Id == "16PR01");
-            var a_16DE01 = project.Activities.First(a => a.Id == "16DE01");
-            var a_15PR01 = project.Activities.First(a => a.Id == "15PR01");
-            var a_14PR01 = project.Activities.First(a => a.Id == "14PR01");
-            var a_16DE02 = project.Activities.First(a => a.Id == "16DE02");
-            var a_13DE01 = project.Activities.First(a => a.Id == "13DE01");
-            var a_16DE03 = project.Activities.First(a => a.Id == "16DE03");
-            var a_13CS01 = project.Activities.First(a => a.Id == "13CS01");
-            var a_17PR01 = project.Activities.First(a => a.Id == "17PR01");
-            var a_13CS02 = project.Activities.First(a => a.Id == "13CS02");
-            var a_14CS01 = project.Activities.First(a => a.Id == "14CS01");
-            var a_16CS01 = project.Activities.First(a => a.Id == "16CS01");
-            var a_16CS02 = project.Activities.First(a => a.Id == "16CS02");
-            var a_15CS01 = project.Activities.First(a => a.Id == "15CS01");
-            var a_16CS03 = project.Activities.First(a => a.Id == "16CS03");
-            var a_17CS01 = project.Activities.First(a => a.Id == "17CS01");
-            var a_12CM01 = project.Activities.First(a => a.Id == "12CM01");
-            #endregion
-
-            #region Act Assert
             a_12BD01.EarliestStart().Value.Is(0m);
             a_12BD01.EarliestFinish().Value.Is(3m);
             a_12BD01.LatestStart().Value.Is(0m);
@@ -273,9 +303,38 @@ namespace Kussy.Analysis.Project.Core
             a_12CM01.FreeFloat().Value.Is(0m);
             a_12CM01.Drag().Value.Is(6m);
             a_12CM01.IsInCriticalPath().Is(true);
-            #endregion
         }
 
+        [TestMethod]
+        public void EPCプロジェクトの全てのルートを求める()
+        {
+            project.RoutesVia(a_12BD01).Count().Is(21);
+            project.RoutesVia(a_01CS01).Count().Is(3);
+            project.RoutesVia(a_15DE01).Count().Is(9);
+            project.RoutesVia(a_17DE01).Count().Is(4);
+            project.RoutesVia(a_12BD02).Count().Is(3);
+            project.RoutesVia(a_16BD01).Count().Is(5);
+            project.RoutesVia(a_14DE01).Count().Is(5);
+            project.RoutesVia(a_15DE02).Count().Is(4);
+            project.RoutesVia(a_17DE02).Count().Is(4);
+            project.RoutesVia(a_16PR01).Count().Is(2);
+            project.RoutesVia(a_16DE01).Count().Is(12);
+            project.RoutesVia(a_15PR01).Count().Is(1);
+            project.RoutesVia(a_14PR01).Count().Is(2);
+            project.RoutesVia(a_16DE02).Count().Is(12);
+            project.RoutesVia(a_13DE01).Count().Is(3);
+            project.RoutesVia(a_16DE03).Count().Is(8);
+            project.RoutesVia(a_13CS01).Count().Is(6);
+            project.RoutesVia(a_17PR01).Count().Is(1);
+            project.RoutesVia(a_13CS02).Count().Is(2);
+            project.RoutesVia(a_14CS01).Count().Is(6);
+            project.RoutesVia(a_16CS01).Count().Is(10);
+            project.RoutesVia(a_16CS02).Count().Is(16);
+            project.RoutesVia(a_15CS01).Count().Is(7);
+            project.RoutesVia(a_16CS03).Count().Is(15);
+            project.RoutesVia(a_17CS01).Count().Is(9);
+            project.RoutesVia(a_12CM01).Count().Is(24);
+        }
 
         private static Project Create()
         {
