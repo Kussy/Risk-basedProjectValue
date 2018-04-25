@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistenceTest", "Persiste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IO", "IO\IO.csproj", "{2119F484-0560-412D-933D-D2D1E042CFD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOTest", "IOTest\IOTest.csproj", "{C14A729E-7D18-4DD1-87F4-581B1DFE857B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2119F484-0560-412D-933D-D2D1E042CFD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2119F484-0560-412D-933D-D2D1E042CFD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2119F484-0560-412D-933D-D2D1E042CFD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C14A729E-7D18-4DD1-87F4-581B1DFE857B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C14A729E-7D18-4DD1-87F4-581B1DFE857B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C14A729E-7D18-4DD1-87F4-581B1DFE857B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C14A729E-7D18-4DD1-87F4-581B1DFE857B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
