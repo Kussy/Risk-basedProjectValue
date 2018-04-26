@@ -23,8 +23,15 @@ namespace Kussy.Analysis.Project.IO
             using (var streamReader = new StreamReader(csvFilePath))
             using (var csv = new CsvReader(streamReader))
             {
+                var records = new List<Resource>();
                 csv.Configuration.RegisterClassMap<ResourceMapper>();
-                return csv.GetRecords<Resource>();
+                csv.Read();
+                csv.ReadHeader();
+                while (csv.Read())
+                {
+                    records.Add(csv.GetRecord<Resource>());
+                }
+                return records;
             }
         }
     }

@@ -1,0 +1,9 @@
+﻿Id,Code,Name,Type,Productivity
+1,code_01,name_01,0,1
+,code_02,name_02,1,1
+3,code_03,name_03,,1
+4,code_04,name_04,2,
+,"code,05","name,05",,
+,"code
+06","name
+06",,

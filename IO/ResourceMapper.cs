@@ -35,7 +35,8 @@ namespace Kussy.Analysis.Project.IO
             Map(x => x.Id)
                 .Name(NameForId)
                 .Index(IndexForId)
-                .Validate(f => int.TryParse(f, out var i));
+                .Validate(f => string.IsNullOrEmpty(f) || int.TryParse(f, out var i))
+                .Default(-1);
             Map(x => x.Code)
                 .Name(NameForCode)
                 .Index(IndexForCode)
@@ -47,12 +48,12 @@ namespace Kussy.Analysis.Project.IO
             Map(x => x.Type)
                 .Name(NameForType)
                 .Index(IndexForType)
-                .Validate(f => int.TryParse(f, out var i) && i >= 0 && i <= 2)
+                .Validate(f => string.IsNullOrEmpty(f) || (int.TryParse(f, out var i) && i >= 0 && i <= 2))
                 .Default(ResourceType.Unknown);
             Map(x => x.Productivity)
                 .Name(NameForProductivity)
                 .Index(IndexForProductivity)
-                .Validate(f => decimal.TryParse(f, out var d) && d > 0)
+                .Validate(f => string.IsNullOrEmpty(f) || (decimal.TryParse(f, out var d) && d > 0))
                 .Default(1.0m);
         }
     }
