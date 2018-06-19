@@ -1,0 +1,9 @@
+﻿Id,Code,Name,UnitOfCurrency,UnitOfTime,Term,Budjet,LiquidatedDamages
+1,code_01,name_01,0,0,0,0,0
+,code_02,name_02,1,1,10.0,10000.0,1000.0
+3,code_03,name_03,,0,0,0,0
+4,code_04,name_04,0,,0,0,0
+,"code,05","name,05",,,,,
+,"code
+06","name
+06",,,,,
