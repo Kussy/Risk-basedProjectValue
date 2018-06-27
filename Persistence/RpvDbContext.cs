@@ -11,6 +11,8 @@ namespace Kussy.Analysis.Project.Persistence
         public DbSet<Project> Projects { get; set; }
         /// <summary>アクティビティ</summary>
         public DbSet<Activity> Activities { get; set; }
+        /// <summary>スコープ</summary>
+        public DbSet<Scope> Scopes { get; set; }
         /// <summary>ネットワーク</summary>
         public DbSet<Network> Networks { get; set; }
         /// <summary>リソース</summary>
@@ -33,6 +35,7 @@ namespace Kussy.Analysis.Project.Persistence
             #region Table Name
             modelBuilder.Entity<Project>().ToTable("projects");
             modelBuilder.Entity<Activity>().ToTable("activities");
+            modelBuilder.Entity<Scope>().ToTable("scopes");
             modelBuilder.Entity<Network>().ToTable("networks");
             modelBuilder.Entity<Resource>().ToTable("resources");
             modelBuilder.Entity<Assign>().ToTable("assigns");
@@ -140,6 +143,21 @@ namespace Kussy.Analysis.Project.Persistence
             modelBuilder.Entity<Activity>().HasIndex(c => new { c.ProjectId, c.State });
             modelBuilder.Entity<Activity>().HasOne(c => c.Project).WithMany(c => c.Activities).HasForeignKey(c => c.ProjectId);
             modelBuilder.Entity<Activity>().HasMany(c => c.Assigns).WithOne(c => c.Activity);
+            #endregion
+            #region Scope Table
+            modelBuilder.Entity<Scope>().Property(c => c.ProjectId)
+                .HasColumnName("project_id")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
+                .IsRequired();
+            modelBuilder.Entity<Scope>().Property(c => c.ActivityId)
+                .HasColumnName("activity_id")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
+                .IsRequired();
+            modelBuilder.Entity<Scope>().HasKey(c => new { c.ProjectId, c.ActivityId });
+            modelBuilder.Entity<Scope>().HasOne(c => c.Project).WithMany(c=>c.Scopes).HasForeignKey(c => new { c.ProjectId });
+            modelBuilder.Entity<Scope>().HasOne(c => c.Activity).WithOne(c=>c.Scope);
             #endregion
             #region Network Table
             modelBuilder.Entity<Network>().Property(c => c.AncestorId)
