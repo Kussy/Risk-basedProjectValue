@@ -6,9 +6,7 @@ namespace Kussy.Analysis.Project.Persistence
     public class Project
     {
         /// <summary>ID</summary>
-        public int Id { get; set; }
-        /// <summary>コード</summary>
-        public string Code { get; set; }
+        public string Id { get; set; }
         /// <summary>名称</summary>
         public string Name { get; set; }
         /// <summary>通貨単位</summary>
@@ -22,6 +20,6 @@ namespace Kussy.Analysis.Project.Persistence
         /// <summary>単位時間辺りの遅延損害金</summary>
         public decimal LiquidatedDamages { get; set; }
         /// <summary>アクティビティ群</summary>
-        public IEnumerable<Activity> Activities { get; set; }
+        public IEnumerable<Scope> Scopes { get; set; }
     }
 }

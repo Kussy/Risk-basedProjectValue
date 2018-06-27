@@ -6,9 +6,7 @@ namespace Kussy.Analysis.Project.Persistence
     public class Resource 
     {
         /// <summary>ID</summary>
-        public int Id { get; set; }
-        /// <summary>コード</summary>
-        public string Code { get; set; }
+        public string Id { get; set; }
         /// <summary>名称</summary>
         public string Name { get; set; }
         /// <summary>資源種類</summary>

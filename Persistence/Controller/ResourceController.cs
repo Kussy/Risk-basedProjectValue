@@ -20,15 +20,15 @@ namespace Kussy.Analysis.Project.Persistence
         }
 
         /// <summary>資源の作成</summary>
-        /// <param name="code">コード</param>
+        /// <param name="id">ID</param>
         /// <param name="name">名称</param>
         /// <param name="type">資源種類</param>
         /// <param name="productivity">生産性</param>
-        public void Create(string code, string name, ResourceType type = ResourceType.Unknown, decimal productivity = 1m)
+        public void Create(string id, string name, ResourceType type = ResourceType.Unknown, decimal productivity = 1m)
         {
             var resource = new Resource
             {
-                Code = code,
+                Id = id,
                 Name = name,
                 Type = type,
                 Productivity = productivity,
@@ -40,7 +40,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <summary>資源の取得</summary>
         /// <param name="id">ID</param>
         /// <returns>資源</returns>
-        public Resource Read(int id)
+        public Resource Read(string id)
         {
             var resource = Context.Resources.Find(id);
             if (resource is null) return resource;
@@ -48,23 +48,10 @@ namespace Kussy.Analysis.Project.Persistence
             foreach (var assign in resource.Assigns)
             {
                 Context.Entry(assign).Reference(a => a.Activity).Load();
-                Context.Entry(assign.Activity).Reference(a => a.Project).Load();
+                Context.Entry(assign.Activity).Reference(a => a.Scope).Load();
+                Context.Entry(assign.Activity.Scope).Reference(s => s.Project).Load();
             }
             return resource;
-        }
-
-        /// <summary>資源の取得</summary>
-        /// <param name="code">コード</param>
-        /// <remarks>ユニークインデックスを張っているので一本引き可能</remarks>
-        /// <returns>資源</returns>
-        public Resource Read(string code)
-        {
-            return Context.Resources
-                .Include(r => r.Assigns)
-                .ThenInclude(a => a.Activity)
-                .ThenInclude(a => a.Project)
-                .Where(r => r.Code == code)
-                .FirstOrDefault();
         }
 
         /// <summary>資源の更新</summary>
@@ -73,7 +60,6 @@ namespace Kussy.Analysis.Project.Persistence
         public void Update(Resource resource)
         {
             var findResource = Context.Resources.Find(resource.Id);
-            findResource.Code = resource.Code;
             findResource.Name = resource.Name;
             findResource.Type = resource.Type;
             findResource.Productivity = resource.Productivity;

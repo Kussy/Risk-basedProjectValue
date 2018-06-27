@@ -45,7 +45,8 @@ namespace Kussy.Analysis.Project.Persistence
             if (assign is null) return assign;
             Context.Entry(assign).Reference(a => a.Resource).Load();
             Context.Entry(assign).Reference(a => a.Activity).Load();
-            Context.Entry(assign.Activity).Reference(a => a.Project).Load();
+            Context.Entry(assign.Activity).Reference(a => a.Scope).Load();
+            Context.Entry(assign.Activity.Scope).Reference(s => s.Project).Load();
             return assign;
         }
 

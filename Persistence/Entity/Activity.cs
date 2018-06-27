@@ -6,15 +6,11 @@ namespace Kussy.Analysis.Project.Persistence
     public class Activity
     {
         /// <summary>ID</summary>
-        public int Id { get; set; }
-        /// <summary>コード</summary>
-        public string Code { get; set; }
+        public string Id { get; set; }
         /// <summary>名称</summary>
         public string Name { get; set; }
-        /// <summary>プロジェクトID</summary>
-        public int ProjectId { get; set; }
-        /// <summary>プロジェクト</summary>
-        public Project Project { get; set; }
+        /// <summary>スコープ</summary>
+        public Scope Scope { get; set; }
         /// <summary>状態</summary>
         public StateType State { get; set; }
         /// <summary>作業量</summary>
