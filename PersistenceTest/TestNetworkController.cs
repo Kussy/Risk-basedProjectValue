@@ -38,13 +38,13 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void アクティビティの作成時に自分自身のネットワークが作成されているべき()
         {
-            var code = "ancestor";
+            var id = "ancestor";
             var name = "ancestor";
             var expectedDepth = 0;
-            ProjectController.Create(code, name);
-            var project = ProjectController.Read(code);
-            ActivityController.Create(project, code, name);
-            var activity = ActivityController.Read(code);
+            ProjectController.Create(id, name);
+            var project = ProjectController.Read(id);
+            ActivityController.Create(project, id, name);
+            var activity = ActivityController.Read(id);
  
             var selfNetwork = NetworkController.Read(activity, activity);
             selfNetwork.AncestorId.Is(activity.Id);
@@ -55,22 +55,22 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void 末端にアクティビティを追加した場合先祖から子孫までの閉包が作成されるべき()
         {
-            var codeProject = "p";
-            ProjectController.Create(codeProject, codeProject);
-            var project = ProjectController.Read(codeProject);
+            var idProject = "p";
+            ProjectController.Create(idProject, idProject);
+            var project = ProjectController.Read(idProject);
 
-            var codeA = "a";
-            var codeB = "b";
-            var codeC = "c";
-            var codeD = "d";
-            ActivityController.Create(project, codeA, codeA);
-            ActivityController.Create(project, codeB, codeB);
-            ActivityController.Create(project, codeC, codeC);
-            ActivityController.Create(project, codeD, codeD);
-            var activityA = ActivityController.Read(codeA);
-            var activityB = ActivityController.Read(codeB);
-            var activityC = ActivityController.Read(codeC);
-            var activityD = ActivityController.Read(codeD);
+            var idA = "a";
+            var idB = "b";
+            var idC = "c";
+            var idD = "d";
+            ActivityController.Create(project, idA, idA);
+            ActivityController.Create(project, idB, idB);
+            ActivityController.Create(project, idC, idC);
+            ActivityController.Create(project, idD, idD);
+            var activityA = ActivityController.Read(idA);
+            var activityB = ActivityController.Read(idB);
+            var activityC = ActivityController.Read(idC);
+            var activityD = ActivityController.Read(idD);
 
             NetworkController.Connect(activityA, activityB);
             NetworkController.Connect(activityB, activityC);
@@ -91,22 +91,22 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void 途中のアクティビティを切断した場合その子孫までで独立したネットワークが残るべき()
         {
-            var codeProject = "p";
-            ProjectController.Create(codeProject, codeProject);
-            var project = ProjectController.Read(codeProject);
+            var idProject = "p";
+            ProjectController.Create(idProject, idProject);
+            var project = ProjectController.Read(idProject);
 
-            var codeA = "a";
-            var codeB = "b";
-            var codeC = "c";
-            var codeD = "d";
-            ActivityController.Create(project, codeA, codeA);
-            ActivityController.Create(project, codeB, codeB);
-            ActivityController.Create(project, codeC, codeC);
-            ActivityController.Create(project, codeD, codeD);
-            var activityA = ActivityController.Read(codeA);
-            var activityB = ActivityController.Read(codeB);
-            var activityC = ActivityController.Read(codeC);
-            var activityD = ActivityController.Read(codeD);
+            var idA = "a";
+            var idB = "b";
+            var idC = "c";
+            var idD = "d";
+            ActivityController.Create(project, idA, idA);
+            ActivityController.Create(project, idB, idB);
+            ActivityController.Create(project, idC, idC);
+            ActivityController.Create(project, idD, idD);
+            var activityA = ActivityController.Read(idA);
+            var activityB = ActivityController.Read(idB);
+            var activityC = ActivityController.Read(idC);
+            var activityD = ActivityController.Read(idD);
 
             NetworkController.Connect(activityA, activityB);
             NetworkController.Connect(activityB, activityC);
@@ -125,25 +125,25 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void アクティビティの親子を取得できるべき()
         {
-            var codeProject = "p";
-            ProjectController.Create(codeProject, codeProject);
-            var project = ProjectController.Read(codeProject);
+            var idProject = "p";
+            ProjectController.Create(idProject, idProject);
+            var project = ProjectController.Read(idProject);
 
-            var codeA = "a";
-            var codeB = "b";
-            var codeC = "c";
-            var codeD = "d";
-            var codeE = "e";
-            ActivityController.Create(project, codeA, codeA);
-            ActivityController.Create(project, codeB, codeB);
-            ActivityController.Create(project, codeC, codeC);
-            ActivityController.Create(project, codeD, codeD);
-            ActivityController.Create(project, codeE, codeE);
-            var activityA = ActivityController.Read(codeA);
-            var activityB = ActivityController.Read(codeB);
-            var activityC = ActivityController.Read(codeC);
-            var activityD = ActivityController.Read(codeD);
-            var activityE = ActivityController.Read(codeE);
+            var idA = "a";
+            var idB = "b";
+            var idC = "c";
+            var idD = "d";
+            var idE = "e";
+            ActivityController.Create(project, idA, idA);
+            ActivityController.Create(project, idB, idB);
+            ActivityController.Create(project, idC, idC);
+            ActivityController.Create(project, idD, idD);
+            ActivityController.Create(project, idE, idE);
+            var activityA = ActivityController.Read(idA);
+            var activityB = ActivityController.Read(idB);
+            var activityC = ActivityController.Read(idC);
+            var activityD = ActivityController.Read(idD);
+            var activityE = ActivityController.Read(idE);
 
             NetworkController.Connect(activityA, activityB);
             NetworkController.Connect(activityB, activityC);
@@ -152,11 +152,11 @@ namespace Kussy.Analysis.Project.Persistence
             NetworkController.Connect(activityD, activityE);
 
             NetworkController.Parents(activityE).Count().Is(2);
-            NetworkController.Parents(activityE).Select(a => a.Code).Contains(codeC).Is(true);
-            NetworkController.Parents(activityE).Select(a => a.Code).Contains(codeD).Is(true);
+            NetworkController.Parents(activityE).Select(a => a.Id).Contains(idC).Is(true);
+            NetworkController.Parents(activityE).Select(a => a.Id).Contains(idD).Is(true);
             NetworkController.Children(activityB).Count().Is(2);
-            NetworkController.Children(activityB).Select(a => a.Code).Contains(codeC).Is(true);
-            NetworkController.Children(activityB).Select(a => a.Code).Contains(codeD).Is(true);
+            NetworkController.Children(activityB).Select(a => a.Id).Contains(idC).Is(true);
+            NetworkController.Children(activityB).Select(a => a.Id).Contains(idD).Is(true);
         }
     }
 }

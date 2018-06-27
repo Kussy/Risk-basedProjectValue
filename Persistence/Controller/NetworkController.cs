@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,14 +30,16 @@ namespace Kussy.Analysis.Project.Persistence
             var network = Context.Networks.Find(ancestor.Id, descendant.Id);
             if (network is null) return network;
             Context.Entry(network).Reference(a => a.Ancestor).Load();
-            Context.Entry(network.Ancestor).Reference(a => a.Project).Load();
+            Context.Entry(network.Ancestor).Reference(a => a.Scope).Load();
+            Context.Entry(network.Ancestor.Scope).Reference(s => s.Project).Load();
             Context.Entry(network.Ancestor).Collection(a => a.Assigns).Load();
             foreach (var assign in network.Ancestor.Assigns)
             {
                 Context.Entry(assign).Reference(a => a.Resource).Load();
             }
             Context.Entry(network).Reference(a => a.Descendant).Load();
-            Context.Entry(network.Descendant).Reference(a => a.Project).Load();
+            Context.Entry(network.Descendant).Reference(a => a.Scope).Load();
+            Context.Entry(network.Descendant.Scope).Reference(s => s.Project).Load();
             Context.Entry(network.Descendant).Collection(a => a.Assigns).Load();
             foreach (var assign in network.Descendant.Assigns)
             {
@@ -93,6 +96,7 @@ namespace Kussy.Analysis.Project.Persistence
         /// <param name="child">子</param>
         public void Connect(Activity parent, Activity child)
         {
+            if (parent.Scope.Project.Id != child.Scope.Project.Id) throw new Exception();
             Network ancestorsDescendants(Network a, Network d)
                 => new Network { AncestorId = a.AncestorId, DescendantId = d.DescendantId, Depth = a.Depth + d.Depth + 1, };
             var networks = Descendants(child).SelectMany(d => Ancestors(parent).Select(a => ancestorsDescendants(a, d)));

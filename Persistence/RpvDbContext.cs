@@ -80,16 +80,8 @@ namespace Kussy.Analysis.Project.Persistence
             modelBuilder.Entity<Project>().HasMany(c => c.Scopes);
             #endregion
             #region Activity Table
-            modelBuilder.Entity<Activity>().Property(c => c.ProjectId)
-                .HasColumnName("project_id")
-                .HasColumnType("integer")
-                .IsRequired();
             modelBuilder.Entity<Activity>().Property(c => c.Id)
                 .HasColumnName("id")
-                .HasColumnType("integer")
-                .IsRequired();
-            modelBuilder.Entity<Activity>().Property(c => c.Code)
-                .HasColumnName("cd")
                 .HasColumnType("nvarchar")
                 .HasMaxLength(32)
                 .IsRequired();
@@ -123,20 +115,13 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasColumnType("decimal(12,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);
-            modelBuilder.Entity<Activity>().Property(c => c.Income)
-            .HasColumnName("income")
-            .HasColumnType("decimal(12,2)")
-            .IsRequired()
-            .HasDefaultValue(0m);
             modelBuilder.Entity<Activity>().Property(c => c.RateOfFailure)
                 .HasColumnName("rate_of_failure")
                 .HasColumnType("decimal(1,2)")
                 .IsRequired()
                 .HasDefaultValue(0m);
             modelBuilder.Entity<Activity>().HasKey(c => new { c.Id });
-            modelBuilder.Entity<Activity>().HasIndex(c => new { c.Code }).IsUnique();
-            modelBuilder.Entity<Activity>().HasIndex(c => new { c.ProjectId, c.State });
-            modelBuilder.Entity<Activity>().HasOne(c => c.Project).WithMany(c => c.Activities).HasForeignKey(c => c.ProjectId);
+            modelBuilder.Entity<Activity>().HasOne(c => c.Scope).WithOne(c => c.Activity);
             modelBuilder.Entity<Activity>().HasMany(c => c.Assigns).WithOne(c => c.Activity);
             #endregion
             #region Scope Table
@@ -151,25 +136,27 @@ namespace Kussy.Analysis.Project.Persistence
                 .HasMaxLength(32)
                 .IsRequired();
             modelBuilder.Entity<Scope>().HasKey(c => new { c.ProjectId, c.ActivityId });
-            modelBuilder.Entity<Scope>().HasOne(c => c.Project).WithMany(c=>c.Scopes).HasForeignKey(c => new { c.ProjectId });
-            modelBuilder.Entity<Scope>().HasOne(c => c.Activity).WithOne(c=>c.Scope);
+            modelBuilder.Entity<Scope>().HasOne(c => c.Project).WithMany(c => c.Scopes).HasForeignKey(c => new { c.ProjectId });
+            modelBuilder.Entity<Scope>().HasOne(c => c.Activity).WithOne(c => c.Scope);
             #endregion
             #region Network Table
             modelBuilder.Entity<Network>().Property(c => c.AncestorId)
                 .HasColumnName("ancestor_id")
-                .HasColumnType("integer")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
                 .IsRequired();
             modelBuilder.Entity<Network>().Property(c => c.DescendantId)
                 .HasColumnName("descendant_id")
-                .HasColumnType("integer")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
                 .IsRequired();
             modelBuilder.Entity<Network>().Property(c => c.Depth)
                 .HasColumnName("depth")
                 .HasColumnType("integer")
                 .IsRequired();
             modelBuilder.Entity<Network>().HasKey(c => new { c.AncestorId, c.DescendantId });
-            modelBuilder.Entity<Network>().HasOne(c => c.Ancestor).WithMany().HasForeignKey(c => c.AncestorId);
-            modelBuilder.Entity<Network>().HasOne(c => c.Descendant).WithMany().HasForeignKey(c => c.DescendantId);
+            modelBuilder.Entity<Network>().HasOne(c => c.Ancestor).WithMany().HasForeignKey(c => new { c.AncestorId });
+            modelBuilder.Entity<Network>().HasOne(c => c.Descendant).WithMany().HasForeignKey(c => new { c.DescendantId });
             #endregion
             #region Resource Table
             modelBuilder.Entity<Resource>().Property(c => c.Id)
@@ -199,18 +186,20 @@ namespace Kussy.Analysis.Project.Persistence
             #region Assign Table
             modelBuilder.Entity<Assign>().Property(c => c.ActivityId)
                 .HasColumnName("activity_id")
-                .HasColumnType("integer")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
                 .IsRequired();
             modelBuilder.Entity<Assign>().Property(c => c.ResourceId)
                 .HasColumnName("resource_id")
-                .HasColumnType("integer")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(32)
                 .IsRequired();
             modelBuilder.Entity<Assign>().Property(c => c.Quantity)
                 .HasColumnName("quantity")
                 .HasColumnType("decimal(12,2)")
                 .IsRequired();
             modelBuilder.Entity<Assign>().HasKey(c => new { c.ActivityId, c.ResourceId });
-            modelBuilder.Entity<Assign>().HasOne(c => c.Activity).WithMany(c => c.Assigns).HasForeignKey(c => c.ActivityId);
+            modelBuilder.Entity<Assign>().HasOne(c => c.Activity).WithMany(c => c.Assigns).HasForeignKey(c => new { c.ActivityId });
             modelBuilder.Entity<Assign>().HasOne(c => c.Resource).WithMany(c => c.Assigns).HasForeignKey(c => c.ResourceId);
             #endregion
         }

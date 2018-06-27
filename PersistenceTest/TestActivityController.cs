@@ -37,15 +37,15 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void 作業のCRUD操作を一通り()
         {
-            var expectedCode = "code";
+            var expectedId = "id";
             var expectedName = "name";
-            ProjectController.Create(expectedCode, expectedName);
-            var project = ProjectController.Read(expectedCode);
-            ActivityController.Create(project, expectedCode, expectedName);
+            ProjectController.Create(expectedId, expectedName);
+            var project = ProjectController.Read(expectedId);
+            ActivityController.Create(project, expectedId, expectedName);
 
-            var activity = ActivityController.Read(expectedCode);
-            activity.ProjectId.Is(project.Id);
-            activity.Code.Is(expectedCode);
+            var activity = ActivityController.Read(expectedId);
+            activity.Scope.Project.Id.Is(project.Id);
+            activity.Id.Is(expectedId);
             activity.Name.Is(expectedName);
             activity.State.Is(StateType.Unknown);
             activity.Income.Is(0m);
@@ -55,14 +55,12 @@ namespace Kussy.Analysis.Project.Persistence
             activity.RateOfFailure.Is(0m);
             activity.Assigns.Count().Is(0);
 
-            var changedCode = "changedCode";
+            var changedId = "changedId";
             var changedName = "changedName";
             var changedNumber = 1m;
             var changedType = StateType.ToDo;
-            ProjectController.Create(changedCode, changedName);
-            var changedProject = ProjectController.Read(changedCode);
-            activity.ProjectId = changedProject.Id;
-            activity.Code = changedCode;
+            ProjectController.Create(changedId, changedName);
+            var changedProject = ProjectController.Read(changedId);
             activity.Name = changedName;
             activity.State = changedType;
             activity.Income= changedNumber;
@@ -72,10 +70,8 @@ namespace Kussy.Analysis.Project.Persistence
             activity.RateOfFailure = changedNumber;
             ActivityController.Update(activity);
 
-            var changedActivity = ActivityController.Read(changedCode);
-            changedActivity.ProjectId.IsNot(project.Id);
-            changedActivity.ProjectId.Is(changedProject.Id);
-            changedActivity.Code.Is(changedCode);
+            var changedActivity = ActivityController.Read(expectedId);
+            changedActivity.Id.Is(expectedId);
             changedActivity.Name.Is(changedName);
             changedActivity.State.Is(changedType);
             changedActivity.Income.Is(changedNumber);
@@ -86,7 +82,7 @@ namespace Kussy.Analysis.Project.Persistence
             changedActivity.Assigns.Count().Is(0);
 
             ActivityController.Delete(changedActivity);
-            ActivityController.Read(changedCode).IsNull();
+            ActivityController.Read(changedId).IsNull();
         }
     }
 }
