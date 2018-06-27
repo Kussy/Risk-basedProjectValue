@@ -43,10 +43,6 @@ namespace Kussy.Analysis.Project.Persistence
             #region Project Table
             modelBuilder.Entity<Project>().Property(c => c.Id)
                 .HasColumnName("id")
-                .HasColumnType("integer")
-                .IsRequired();
-            modelBuilder.Entity<Project>().Property(c => c.Code)
-                .HasColumnName("cd")
                 .HasColumnType("nvarchar")
                 .HasMaxLength(32)
                 .IsRequired();
@@ -81,8 +77,7 @@ namespace Kussy.Analysis.Project.Persistence
                 .IsRequired()
                 .HasDefaultValue(0m);
             modelBuilder.Entity<Project>().HasKey(c => new { c.Id });
-            modelBuilder.Entity<Project>().HasIndex(c => new { c.Code }).IsUnique();
-            modelBuilder.Entity<Project>().HasMany(c => c.Activities).WithOne();
+            modelBuilder.Entity<Project>().HasMany(c => c.Scopes);
             #endregion
             #region Activity Table
             modelBuilder.Entity<Activity>().Property(c => c.ProjectId)
@@ -129,10 +124,10 @@ namespace Kussy.Analysis.Project.Persistence
                 .IsRequired()
                 .HasDefaultValue(0m);
             modelBuilder.Entity<Activity>().Property(c => c.Income)
-                .HasColumnName("income")
-                .HasColumnType("decimal(12,2)")
-                .IsRequired()
-                .HasDefaultValue(0m);
+            .HasColumnName("income")
+            .HasColumnType("decimal(12,2)")
+            .IsRequired()
+            .HasDefaultValue(0m);
             modelBuilder.Entity<Activity>().Property(c => c.RateOfFailure)
                 .HasColumnName("rate_of_failure")
                 .HasColumnType("decimal(1,2)")

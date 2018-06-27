@@ -34,26 +34,24 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void プロジェクトのCRUD操作を一通り()
         {
-            var expectedCode = "code";
+            var expectedId = "id";
             var expectedName = "name";
-            ProjectController.Create(expectedCode, expectedName);
+            ProjectController.Create(expectedId, expectedName);
 
-            var project = ProjectController.Read(expectedCode);
-            project.Code.Is(expectedCode);
+            var project = ProjectController.Read(expectedId);
+            project.Id.Is(expectedId);
             project.Name.Is(expectedName);
             project.Budjet.Is(0m);
             project.LiquidatedDamages.Is(0m);
             project.Term.Is(0m);
             project.UnitOfCurrency.Is(CurrencyType.JPY);
             project.UnitOfTime.Is(TimeType.Day);
-            project.Activities.Count().Is(0);
+            project.Scopes.Count().Is(0);
 
-            var changedCode = "changedCode";
             var changedName = "changedName";
             var changedNumber = 10m;
             var changedCurrency = CurrencyType.USD;
             var changedTime = TimeType.Month;
-            project.Code = changedCode;
             project.Name = changedName;
             project.Budjet = changedNumber;
             project.LiquidatedDamages = changedNumber;
@@ -62,19 +60,18 @@ namespace Kussy.Analysis.Project.Persistence
             project.UnitOfTime = changedTime;
             ProjectController.Update(project);
 
-            var changedProject = ProjectController.Read(changedCode);
+            var changedProject = ProjectController.Read(expectedId);
             changedProject.Id.Is(project.Id);
-            changedProject.Code.Is(changedCode);
             changedProject.Name.Is(changedName);
             project.Budjet.Is(changedNumber);
             project.LiquidatedDamages.Is(changedNumber);
             project.Term.Is(changedNumber);
             project.UnitOfCurrency.Is(changedCurrency);
             project.UnitOfTime.Is(changedTime);
-            project.Activities.Count().Is(0);
+            project.Scopes.Count().Is(0);
 
             ProjectController.Delete(changedProject);
-            ProjectController.Read(changedCode).IsNull();
+            ProjectController.Read(expectedId).IsNull();
         }
     }
 }
