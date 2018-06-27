@@ -34,37 +34,34 @@ namespace Kussy.Analysis.Project.Persistence
         [TestMethod]
         public void 資源のCRUD操作を一通り()
         {
-            var expectedCode = "code";
+            var expectedId = "id";
             var expectedName = "name";
-            ResourceController.Create(expectedCode, expectedName);
+            ResourceController.Create(expectedId, expectedName);
 
-            var resource = ResourceController.Read(expectedCode);
-            resource.Code.Is(expectedCode);
+            var resource = ResourceController.Read(expectedId);
+            resource.Id.Is(expectedId);
             resource.Name.Is(expectedName);
             resource.Type.Is(ResourceType.Unknown);
             resource.Productivity.Is(1m);
             resource.Assigns.Count().Is(0);
 
-            var changedCode = "changedCode";
             var changedName = "changedName";
             var changedNumber = 2m;
             var changedType = ResourceType.Human;
-            resource.Code = changedCode;
             resource.Name = changedName;
             resource.Type = changedType;
             resource.Productivity= changedNumber;
             ResourceController.Update(resource);
 
-            var changedResource = ResourceController.Read(changedCode);
+            var changedResource = ResourceController.Read(expectedId);
             changedResource.Id.Is(resource.Id);
-            changedResource.Code.Is(changedCode);
             changedResource.Name.Is(changedName);
             resource.Type.Is(changedType);
             resource.Productivity.Is(changedNumber);
             resource.Assigns.Count().Is(0);
 
             ResourceController.Delete(changedResource);
-            ResourceController.Read(changedCode).IsNull();
+            ResourceController.Read(expectedId).IsNull();
         }
     }
 }

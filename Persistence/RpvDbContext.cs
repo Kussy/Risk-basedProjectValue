@@ -179,10 +179,6 @@ namespace Kussy.Analysis.Project.Persistence
             #region Resource Table
             modelBuilder.Entity<Resource>().Property(c => c.Id)
                 .HasColumnName("id")
-                .HasColumnType("integer")
-                .IsRequired();
-            modelBuilder.Entity<Resource>().Property(c => c.Code)
-                .HasColumnName("cd")
                 .HasColumnType("nvarchar")
                 .HasMaxLength(32)
                 .IsRequired();
@@ -202,7 +198,6 @@ namespace Kussy.Analysis.Project.Persistence
                 .IsRequired()
                 .HasDefaultValue(1m);
             modelBuilder.Entity<Resource>().HasKey(c => new { c.Id });
-            modelBuilder.Entity<Resource>().HasIndex(c => new { c.Code }).IsUnique();
             modelBuilder.Entity<Resource>().HasIndex(c => new { c.Type });
             modelBuilder.Entity<Resource>().HasMany(c => c.Assigns).WithOne(c => c.Resource);
             #endregion
